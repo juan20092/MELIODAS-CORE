@@ -9,8 +9,8 @@ import chalk from 'chalk'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-const {
-  default: _makeWaSocket,
+import {
+  makeWASocket as _makeWaSocket,
   proto,
   jidDecode,
   areJidsSameUser,
@@ -19,7 +19,7 @@ const {
   generateWAMessageFromContent,
   extractMessageContent,
   prepareWAMessageMedia
-} = (await import('@whiskeysockets/baileys')).default
+} from 'baileys'
 
 
 String.prototype.decodeJid = function () {
@@ -191,4 +191,84 @@ export function makeWASocket(opts = {}) {
   }
 
   return conn
+}
+
+/**
+ * Serializa un mensaje de Baileys añadiendo propiedades de conveniencia.
+ * @param {import('@whiskeysockets/baileys').WASocket} conn
+ * @param {import('@whiskeysockets/baileys').proto.IWebMessageInfo} m
+ * @returns {object}
+ */
+export function smsg(conn, m) {
+  if (!m) return m
+
+  // Tipo de mensaje principal
+  const mtype = Object.keys(m.message || {})[0]
+  const msg = m.message?.[mtype] || {}
+
+  m.mtype = mtype
+
+  // JID del chat
+  m.chat = m.key?.remoteJid || ''
+
+  // Si es grupo
+  m.isGroup = m.chat.endsWith('@g.us')
+
+  // Quién envió
+  m.sender = m.isGroup
+    ? (m.key?.participant || m.message?.participant || '')
+    : (m.key?.remoteJid || '')
+
+  m.sender = m.sender?.decodeJid?.() || m.sender
+
+  // fromMe
+  m.fromMe = m.key?.fromMe || false
+
+  // Texto del mensaje
+  m.text =
+    msg?.text ||
+    msg?.caption ||
+    m.message?.conversation ||
+    m.message?.extendedTextMessage?.text ||
+    m.message?.imageMessage?.caption ||
+    m.message?.videoMessage?.caption ||
+    m.message?.buttonsResponseMessage?.selectedButtonId ||
+    m.message?.listResponseMessage?.singleSelectReply?.selectedRowId ||
+    m.message?.templateButtonReplyMessage?.selectedId ||
+    ''
+
+  // Mensaje citado
+  const quoted = msg?.contextInfo?.quotedMessage
+  if (quoted) {
+    const qtype = Object.keys(quoted)[0]
+    m.quoted = {
+      mtype: qtype,
+      message: quoted,
+      key: {
+        remoteJid: m.chat,
+        fromMe: msg.contextInfo?.participant === conn.user?.id,
+        id: msg.contextInfo?.stanzaId,
+        participant: msg.contextInfo?.participant
+      }
+    }
+    m.quoted.text =
+      quoted[qtype]?.text ||
+      quoted[qtype]?.caption ||
+      quoted?.conversation ||
+      ''
+  } else {
+    m.quoted = null
+  }
+
+  // Menciones
+  m.mentionedJid = msg?.contextInfo?.mentionedJid || []
+
+  // Métodos de conveniencia
+  m.reply = (text, opts = {}) =>
+    conn.sendMessage(m.chat, { text: String(text), ...opts }, { quoted: m })
+
+  m.react = (emoji) =>
+    conn.sendMessage(m.chat, { react: { text: emoji, key: m.key } })
+
+  return m
 }
