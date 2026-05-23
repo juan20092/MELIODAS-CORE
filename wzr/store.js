@@ -2,7 +2,7 @@ import { readFileSync, writeFile, existsSync } from 'fs'
 import { setTimeout as delay } from 'timers/promises'
 
 const { initAuthCreds, BufferJSON, proto } =
-  (await import('@whiskeysockets/baileys')).default
+  await import('baileys')
 
 const metadataCache = new Map()
 
@@ -169,3 +169,4 @@ export default {
   bind,
   useSingleFileAuthState
 }
+
