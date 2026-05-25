@@ -19,7 +19,7 @@ import {
   generateWAMessageFromContent,
   extractMessageContent,
   prepareWAMessageMedia
-} from 'baileys'
+} from '@whiskeysockets/baileys'
 
 
 String.prototype.decodeJid = function () {
@@ -37,18 +37,26 @@ String.prototype.capitalize = function () {
 
 async function getMediaType(src) {
   if (/^https?:\/\//i.test(src)) {
-    const res = await fetch(src, { method: 'HEAD' })
-    return res.headers.get('content-type') || ''
+    try {
+      const res = await fetch(src, { method: 'HEAD', timeout: 5000 })
+      return res.headers.get('content-type') || ''
+    } catch {
+      return ''
+    }
   }
-  const { mime } = await fileTypeFromBuffer(fs.readFileSync(src)).catch(() => ({ mime: '' }))
-  return mime
+  try {
+    const buffer = await fs.promises.readFile(src)
+    const type = await fileTypeFromBuffer(buffer)
+    return type?.mime || ''
+  } catch {
+    return ''
+  }
 }
 
 
 export function makeWASocket(opts = {}) {
   const conn = _makeWaSocket(opts)
 
-  // Logger compacto
   conn.logger = {
     info:  (...a) => console.log(chalk.green('[INFO]'),  format(...a)),
     error: (...a) => console.log(chalk.red('[ERROR]'),   format(...a)),
@@ -58,7 +66,6 @@ export function makeWASocket(opts = {}) {
   }
 
   if (conn.user?.id) conn.user.jid = conn.user.id.decodeJid()
-
 
   conn.decodeJid = (jid) => {
     if (!jid || typeof jid !== 'string') return null
@@ -89,7 +96,7 @@ export function makeWASocket(opts = {}) {
       data = await res.buffer()
     } else if (fs.existsSync(src)) {
       filename = src
-      data = fs.readFileSync(src)
+      data = await fs.promises.readFile(src)
     } else {
       data = Buffer.from(src)
     }
@@ -103,10 +110,8 @@ export function makeWASocket(opts = {}) {
     return { res, filename, data, ...type, deleteFile: () => filename && fs.promises.unlink(filename) }
   }
 
-
   conn.reply = (jid, text, quoted, opts = {}) =>
     conn.sendMessage(jid, { text: String(text), ...opts }, { quoted, ...opts })
-
 
   conn.sendFile = async (jid, src, filename = '', caption = '', quoted, ptt = false, opts = {}) => {
     const { data, filename: fp, mime } = await conn.getFile(src, true)
@@ -116,22 +121,27 @@ export function makeWASocket(opts = {}) {
     else if (/audio/.test(mime)) mtype = 'audio'
     if (opts.asDocument) mtype = 'document'
     const mimetype = mtype === 'audio' ? 'audio/ogg; codecs=opus' : mime
-    return conn.sendMessage(jid, { [mtype]: { url: fp }, caption, ptt, mimetype, fileName: filename || path.basename(fp), ...opts }, { quoted })
+    
+    const result = await conn.sendMessage(jid, { [mtype]: { url: fp }, caption, ptt, mimetype, fileName: filename || path.basename(fp), ...opts }, { quoted })
+    
+    if (fp && fp.includes('/tmp/')) {
+      fs.promises.unlink(fp).catch(() => {})
+    }
+    return result
   }
-
 
   conn.downloadM = async (m, type, save = false) => {
     if (!m?.url && !m?.directPath) return Buffer.alloc(0)
     const stream = await downloadContentFromMessage(m, type)
-    let buf = Buffer.from([])
-    for await (const chunk of stream) buf = Buffer.concat([buf, chunk])
+    const chunks = []
+    for await (const chunk of stream) chunks.push(chunk)
+    const buf = Buffer.concat(chunks)
     if (save) {
       const { filename } = await conn.getFile(buf, true)
       return filename
     }
     return buf
   }
-
 
   conn.sendButton2 = async (jid, text, footer, buffer, buttons, copy, urls, quoted, opts = {}) => {
     let img, video
@@ -148,13 +158,12 @@ export function makeWASocket(opts = {}) {
     const msg = generateWAMessageFromContent(jid, {
       viewOnceMessage: { message: { interactiveMessage: {
         body: { text }, footer: { text: footer },
-        header: { hasMediaAttachment: false, imageMessage: img?.imageMessage || null, videoMessage: video?.videoMessage || null },
+        header: { hasMediaAttachment: !!buffer, imageMessage: img?.imageMessage || null, videoMessage: video?.videoMessage || null },
         nativeFlowMessage: { buttons: btns, messageParamsJson: '' }
       }}}
     }, { userJid: conn.user.jid, quoted })
     return conn.relayMessage(jid, msg.message, { messageId: msg.key.id, ...opts })
   }
-
 
   conn.sendList = async (jid, title, text, buttonText, buffer, sections, quoted, opts = {}) => {
     let img, video
@@ -167,7 +176,7 @@ export function makeWASocket(opts = {}) {
     }
     const msg = generateWAMessageFromContent(jid, {
       viewOnceMessage: { message: { interactiveMessage: {
-        header: { title, hasMediaAttachment: false, imageMessage: img?.imageMessage || null, videoMessage: video?.videoMessage || null },
+        header: { title, hasMediaAttachment: !!buffer, imageMessage: img?.imageMessage || null, videoMessage: video?.videoMessage || null },
         body: { text },
         nativeFlowMessage: { buttons: [{ name: 'single_select', buttonParamsJson: JSON.stringify({ title: buttonText, sections }) }], messageParamsJson: '' }
       }}}
@@ -175,10 +184,8 @@ export function makeWASocket(opts = {}) {
     return conn.relayMessage(jid, msg.message, { messageId: msg.key.id, ...opts })
   }
 
-
   conn.sendPoll = (jid, name, values, selectableCount = 1) =>
     conn.sendMessage(jid, { poll: { name, values, selectableCount } })
-
 
   conn.copyNForward = async (jid, message, score = true, opts = {}) => {
     let m = generateForwardMessageContent(message, !!score)
@@ -193,38 +200,23 @@ export function makeWASocket(opts = {}) {
   return conn
 }
 
-/**
- * Serializa un mensaje de Baileys añadiendo propiedades de conveniencia.
- * @param {import('@whiskeysockets/baileys').WASocket} conn
- * @param {import('@whiskeysockets/baileys').proto.IWebMessageInfo} m
- * @returns {object}
- */
 export function smsg(conn, m) {
   if (!m) return m
 
-  // Tipo de mensaje principal
   const mtype = Object.keys(m.message || {})[0]
   const msg = m.message?.[mtype] || {}
 
   m.mtype = mtype
-
-  // JID del chat
   m.chat = m.key?.remoteJid || ''
-
-  // Si es grupo
   m.isGroup = m.chat.endsWith('@g.us')
 
-  // Quién envió
   m.sender = m.isGroup
     ? (m.key?.participant || m.message?.participant || '')
     : (m.key?.remoteJid || '')
 
   m.sender = m.sender?.decodeJid?.() || m.sender
-
-  // fromMe
   m.fromMe = m.key?.fromMe || false
 
-  // Texto del mensaje
   m.text =
     msg?.text ||
     msg?.caption ||
@@ -237,7 +229,6 @@ export function smsg(conn, m) {
     m.message?.templateButtonReplyMessage?.selectedId ||
     ''
 
-  // Mensaje citado
   const quoted = msg?.contextInfo?.quotedMessage
   if (quoted) {
     const qtype = Object.keys(quoted)[0]
@@ -260,10 +251,8 @@ export function smsg(conn, m) {
     m.quoted = null
   }
 
-  // Menciones
   m.mentionedJid = msg?.contextInfo?.mentionedJid || []
 
-  // Métodos de conveniencia
   m.reply = (text, opts = {}) =>
     conn.sendMessage(m.chat, { text: String(text), ...opts }, { quoted: m })
 
