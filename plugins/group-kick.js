@@ -1,87 +1,91 @@
+import axios from 'axios'
+
 let handler = async (m, { conn }) => {
-
-  const chatMetadata = await conn.groupMetadata(m.chat)
-  const groupAdmins = chatMetadata.participants.filter(p => p.admin)
-  const isAdmin = groupAdmins.some(admin => admin.id === m.sender)
-
-  if (!isAdmin) return
-
   const target =
     m.mentionedJid?.[0] ||
-    m.quoted?.sender
+    m.quoted?.sender ||
+    m.quoted?.participant ||
+    m.quoted?.key?.participant
 
-  if (!target) {
-    return conn.sendMessage(m.chat, {
-      text: `
-┏━━━━━━━━━┓
-                𝐊𝐈𝐂𝐊
-┗━━━━━━━━━┛
+  const labelTest = "𝐌𝐄𝐋𝐈𝐎𝐃𝐀𝐒 - 𝐁𝐎𝐓"
+  const imgUrl = "https://cdn.dix.lat/me/tmp/1358c541-bb6d-4044-a798-4cb9d4f3b964.jpg"
 
-➥ 𝙈𝙚𝙣𝙘𝙞𝙤𝙣𝙖 ο 𝙧𝙚𝙨𝙥ο𝙣𝙙𝙚
-➥ 𝙖𝙡 𝙪𝙨𝙪𝙖𝙧ἰο 𝙦𝙪𝙚
-➥ 𝙙𝙚𝙨𝙚𝙖𝙨 𝙚𝙭𝙪𝙡𝙨𝙖𝙧
-      `.trim(),
-      ...global.rcanal
-    }, { quoted: m })
-  }
-
-  const groupOwner = chatMetadata.owner || chatMetadata.id.split('-')[0] + '@s.whatsapp.net'
-
-  if (target === groupOwner) {
-    return conn.sendMessage(m.chat, {
-      text: `❌ *No puedes expulsar al Dueño/Creador del grupo.*`,
-      ...global.rcanal
-    }, { quoted: m })
-  }
+  let fakeQuoted = m
 
   try {
+    const response = await axios.get(imgUrl, {
+      responseType: 'arraybuffer'
+    }).catch(() => null)
 
-    await conn.groupParticipantsUpdate(
-      m.chat,
-      [target],
-      "remove"
-    )
+    if (response) {
+      const thumbBuffer = response.data
 
-    let username = target.split("@")[0]
-
-    await conn.sendMessage(m.chat, {
-      text: `
-┏━━━━━━━━━┓
-                𝐊𝐈𝐂𝐊
-┗━━━━━━━━━┛
-
-➥ @${username}
-
-> ⟢ 𝙁𝙪𝙚 𝙚𝙭𝙪𝙡𝙨𝙖𝙙ο 𝙙𝙚𝙡 𝙜𝙧𝙪𝙥ο
-      `.trim(),
-      mentions: [target],
-      contextInfo: {
-        ...(global.rcanal?.contextInfo || {}),
-        mentionedJid: [target]
+      fakeQuoted = {
+        key: {
+          participant: '0@s.whatsapp.net',
+          remoteJid: 'status@broadcast',
+          fromMe: false,
+          id: 'KiritoTest'
+        },
+        message: {
+          locationMessage: {
+            name: labelTest,
+            jpegThumbnail: thumbBuffer
+          }
+        },
+        participant: '0@s.whatsapp.net'
       }
-    }, { quoted: m })
-
-  } catch (e) {
-    console.log(e)
-
-    return conn.sendMessage(m.chat, {
-      text: `
-┏━━━━━━━━━┓
-                𝐊𝐈𝐂𝐊
-┗━━━━━━━━━┛
-
-> ➥ 𝙀𝙡 𝙗ο𝙩 𝙣ο 𝙚𝙨 𝙖𝙙𝙢𝙞н
-> ➥ 𝙊 𝙚𝙡 𝙪𝙨𝙪𝙖𝙧ἰο 𝙮𝙖 𝙣ο 𝙚𝙨𝙩𝙖
-      `.trim(),
-      ...global.rcanal
-    }, { quoted: m })
+    }
+  } catch (err) {
+    console.error("Error al crear el Fake Chat:", err)
   }
+
+  if (!target) {
+    return conn.sendMessage(
+      m.chat,
+      {
+        text: '《 *ᴍᴇɴᴄɪᴏɴᴀ ᴏ ʀᴇsᴘᴏɴᴅᴇ ᴀʟ ᴜsᴜᴀʀɪᴏ ǫᴜᴇ ᴅᴇsᴇᴀs ᴇʟɪᴍɪɴᴀʀ*》',
+        contextInfo: {
+          forwardingScore: 1,
+          isForwarded: true,
+          forwardedNewsletterMessageInfo: {
+            newsletterJid: global.ch || '120363419404216418@newsletter',
+            newsletterName: '♐︎ 𝖒𝖊𝖑𝖎𝖔𝖉𝖆𝖘 - 𝕮𝖍𝖆𝖓𝖓𝖊𝖑 ↯' 
+          }
+        } 
+      },
+      { quoted: fakeQuoted }
+    )
+  }
+
+  await conn.groupParticipantsUpdate(
+    m.chat,
+    [target],
+    'remove'
+  )
+
+  await conn.sendMessage(
+    m.chat,
+    {
+      text: '✅ *ᴜsᴇʀ ᴇʟɪᴍɪɴᴀᴅᴏ ᴄᴏɴ ᴇxɪᴛᴏ*', 
+      contextInfo: {
+        forwardingScore: 1,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: global.ch || '120363419404216418@newsletter',
+          newsletterName: '♐︎ 𝖒𝖊𝖑𝖎𝖔𝖉𝖆𝖘 - 𝕮𝖍𝖆𝖓𝖓𝖊𝖑 ↯' 
+        }
+      } 
+    },
+    { quoted: fakeQuoted }
+  )
 }
 
+handler.command = /^\.?kick(\s|$)/i
 handler.help = ["kick"]
-handler.tags = ["grupos"]
-handler.command = /^kick$/i
+handler.tags = ["grupo"]
 handler.group = true
 handler.admin = true
 handler.botAdmin = true
+
 export default handler
