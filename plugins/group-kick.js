@@ -64,6 +64,13 @@ let handler = async (m, { conn }) => {
     'remove'
   )
 
+      await conn.sendMessage(m.chat, {
+  react: {
+    text: '✅',
+    key: m.key
+  }
+})
+
   await conn.sendMessage(
     m.chat,
     {
