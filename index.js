@@ -131,7 +131,6 @@ async function filesInit() {
   
   console.log(chalk.bold.blueBright('\n  ┌─ Cargando plugins ' + '─'.repeat(28)))
   
-  // 🚀 OPTIMIZACIÓN: Mapeamos promesas para cargar todos los archivos en paralelo usando Promise.all
   await Promise.all(files.map(async (filename) => {
     try {
       const mod = await import(`file://${join(pluginFolder, filename)}`)
@@ -236,14 +235,14 @@ if (!methodCodeQR && !methodCode && !existsSync(`${sessionsDir}/creds.json`)) {
 
 const connectionOptions = {
   logger: pino({ level: 'silent' }),
-  browser: Browsers.ubuntu('Chrome'), // 🚀 OPTIMIZACIÓN: Estructura nativa recomendada por Baileys
+  browser: Browsers.ubuntu('Chrome'), 
   auth: {
     creds: state.creds,
     keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'fatal' }))
   },
   markOnlineOnConnect: true,
-  syncFullHistory: false, // 🚀 OPTIMIZACIÓN CLAVE: Evita descargar todo el historial viejo, ahorrando RAM y velocidad de red
-  generateHighQualityLinkPreview: false, // Desactivar si no es estrictamente necesario, acelera el envío de links
+  syncFullHistory: false, 
+  generateHighQualityLinkPreview: false, 
   msgRetryCounterCache,
   version,
   getMessage: async (key) => {
