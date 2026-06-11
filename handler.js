@@ -172,13 +172,74 @@ import { smsg } from "./wzr/simple.js"
 import fs from "fs"
 import path from "path"
 import axios from "axios"
+import { isChatBanned } from "./wzr/banlist.js"
 
 global.plugins = {}
 global.groupMetaCache ||= new Map()
 
 const pluginFolder = "./plugins"
 
+function normalizeJid(jid, conn) {
+  if (!jid) return ''
+  const value = String(jid).trim()
+  if (!value) return ''
+  const decoded = conn?.decodeJid?.(value) || value
+  const cleaned = String(decoded).trim()
+  if (!cleaned) return ''
+
+  return cleaned
+    .replace(/:.*$/, '')
+    .replace(/@lid$/i, '@s.whatsapp.net')
+    .replace(/@s\.whatsapp\.net$/i, '@s.whatsapp.net')
+    .toLowerCase()
+}
+
+function findParticipant(participants, targetJid, conn) {
+  const target = normalizeJid(targetJid, conn)
+  if (!target) return null
+
+  const targetVariants = [
+    target,
+    target.replace(/@s\.whatsapp\.net$/i, '@lid'),
+    target.replace(/@lid$/i, '@s.whatsapp.net')
+  ].filter(Boolean)
+
+  return participants.find((participant) => {
+    const ids = [
+      normalizeJid(participant?.id, conn),
+      normalizeJid(participant?.user, conn),
+      normalizeJid(participant?.jid, conn),
+      normalizeJid(participant?.userJid, conn),
+      normalizeJid(participant?.participant, conn)
+    ].filter(Boolean)
+
+    return ids.some((id) => targetVariants.includes(id))
+  }) || null
+}
+
+function getAdminStatus(participants, senderJid, botJid, conn) {
+  const userParticipant = findParticipant(participants, senderJid, conn)
+  const botParticipant = findParticipant(participants, botJid, conn)
+
+  const userAdmin = String(
+    userParticipant?.admin || userParticipant?.isAdmin || userParticipant?.rank || userParticipant?.type || ''
+  ).toLowerCase()
+  const botAdmin = String(
+    botParticipant?.admin || botParticipant?.isAdmin || botParticipant?.rank || botParticipant?.type || ''
+  ).toLowerCase()
+
+  const isUserAdmin = ['admin', 'superadmin', 'owner'].includes(userAdmin) || userParticipant?.isAdmin === true || userParticipant?.isSuperAdmin === true
+  const isBotAdmin = ['admin', 'superadmin', 'owner'].includes(botAdmin) || botParticipant?.isAdmin === true || botParticipant?.isSuperAdmin === true
+
+  return {
+    isAdmin: isUserAdmin,
+    isBotAdmin
+  }
+}
+
 function getFilesRecursively(dir) {
+  if (!fs.existsSync(dir)) return []
+
   let files = []
   for (const file of fs.readdirSync(dir)) {
     const fullPath = path.join(dir, file)
@@ -194,6 +255,10 @@ function getFilesRecursively(dir) {
 }
 
 async function loadPlugins() {
+  if (!fs.existsSync(pluginFolder)) {
+    fs.mkdirSync(pluginFolder, { recursive: true })
+  }
+
   global.plugins = {}
   const files = getFilesRecursively(pluginFolder)
 
@@ -213,36 +278,47 @@ async function loadPlugins() {
 
 await loadPlugins()
 
-fs.watch(pluginFolder, { recursive: true }, async (_, file) => {
-  try {
-    if (!file || !file.endsWith(".js")) return
-    const fullPath = path.join(pluginFolder, file)
-    delete global.plugins[fullPath]
+const watchPlugins = () => {
+  const onChange = async (_, file) => {
+    try {
+      if (!file || !file.endsWith(".js")) return
+      const fullPath = path.join(pluginFolder, file)
+      delete global.plugins[fullPath]
 
-    const modulePath = "./" + fullPath.replace(/\\/g, "/")
-    const mod = await import(`${modulePath}?update=${Date.now()}`)
-    global.plugins[fullPath] = mod.default || mod
-    console.log(`♻️ Plugin recargado → ${fullPath}`)
-  } catch (e) {
-    console.error(`❌ Error recargando → ${file}`)
-    console.error(e.stack || e)
+      const modulePath = "./" + fullPath.replace(/\\/g, "/")
+      const mod = await import(`${modulePath}?update=${Date.now()}`)
+      global.plugins[fullPath] = mod.default || mod
+      console.log(`♻️ Plugin recargado → ${fullPath}`)
+    } catch (e) {
+      console.error(`❌ Error recargando → ${file}`)
+      console.error(e.stack || e)
+    }
   }
-})
+
+  try {
+    return fs.watch(pluginFolder, { recursive: true }, onChange)
+  } catch (e) {
+    console.warn(`⚠️ El watcher recursivo de plugins no está disponible: ${e.message}`)
+    return fs.watch(pluginFolder, onChange)
+  }
+}
+
+watchPlugins()
 
 let cachedThumbBuffer = null
 const imgUrl = "https://cdn.dix.lat/me/b0216efd-5f4a-4f5a-97bf-b62a81d10014.jpg"
 
 global.dfail = async (type, m, conn, command = "", usedPrefix = ".", user2 = "usuario") => {
   const msg = {
-        rowner: "> ╰➤ |𝐀𝐯𝐢𝐬𝐨| `𝐋𝐨 𝐬𝐢𝐞𝐧𝐭𝐨 𝐞𝐬𝐭𝐞 𝐜𝐨𝐦𝐚𝐧𝐝𝐨 𝐬𝐨𝐥𝐨 𝐞𝐬 𝐩𝐚𝐫𝐚 𝐦𝐢 𝐜𝐫𝐞𝐚𝐝𝐨𝐫`🚫",
-        owner: "> ╰➤ _ |𝐀𝐯𝐢𝐬𝐨| *` 𝙋𝙚𝙧𝙙𝙤𝙣 𝙨𝙤𝙡𝙤 𝙢𝙞𝙨 𝙘𝙧𝙚𝙖𝙙𝙤𝙧𝙚𝙨 𝙥𝙪𝙚𝙙𝙚𝙣 𝙪𝙨𝙖𝙧𝙡𝙤 😴.`*_",
-        mods: "> ╰➤ _*|𝐀𝐯𝐢𝐬𝐨| `𝐄𝐡 𝐥𝐨 𝐬𝐢𝐞𝐧𝐭𝐨 𝐞𝐬𝐭𝐨 𝐬𝐨𝐥𝐨 𝐞𝐬 𝐩𝐚𝐫𝐚 𝐥𝐨𝐬 𝐦𝐨𝐝𝐬 ⚡`*_",
-        premium: "> ╰➤ |𝐀𝐯𝐢𝐬𝐨| *`🔑 𝐍𝐎 𝐄𝐑𝐄𝐒 𝐔𝐒𝐔𝐀𝐑𝐈𝐎 𝐏𝐑𝐄𝐌𝐈𝐔𝐌 𝐇𝐀𝐁𝐋𝐀 𝐂𝐎𝐍 𝐌𝐈 𝐂𝐑𝐄𝐀𝐃𝐎𝐑`*_",
-        group: "> ╰➤ |𝐀𝐯𝐢𝐬𝐨|  _*`↘️ 𝐄𝐒𝐓𝐄 𝐂𝐎𝐌𝐀𝐍𝐃𝐎́ 𝐒𝐎𝐋𝐎 𝐅𝐔𝐍𝐂𝐈𝐎𝐍𝐀 𝐄𝐍 𝐆𝐑𝐔𝐏𝐎𝐒`*_",
-        private: "> ╰➤ |𝐀𝐯𝐢𝐬𝐨|  _*`💬 𝐔𝐒𝐀 𝐄𝐋 𝐂𝐇𝐀𝐓 𝐏𝐑𝐈𝐕𝐀𝐃𝐎 𝐏𝐀𝐑𝐀 𝐄𝐒𝐓𝐄 𝐂𝐎𝐌𝐀𝐍𝐃𝐎`*_",
-        admin: "> ╰➤ |𝐀𝐯𝐢𝐬𝐨| _*`𝐓𝐔 𝐍𝐎 𝐄𝐑𝐄𝐒 𝐀𝐃𝐌𝐈𝐍 😝`*_",
-        botAdmin: "> ╰➤ |𝐀𝐯𝐢𝐬𝐨| _*`⚠️ 𝐍𝐄𝐂𝐄𝐒𝐈𝐓𝐎 𝐒𝐄𝐑 𝐀𝐃𝐌𝐈𝐍 𝐏𝐀𝐑𝐀 𝐔𝐒𝐀𝐑 𝐋𝐀𝐒 𝐅𝐔𝐍𝐂𝐈𝐎𝐍𝐄𝐒`*_",
-        restrict: "> _*`𝐂𝐎𝐌𝐀𝐍𝐃𝐎 𝐀𝐏𝐀𝐆𝐀𝐃𝐎 𝐏𝐎𝐑 𝐌𝐈 𝐃𝐔𝐄Ñ𝐎`*_" 
+    rowner: "> ╰➤ |𝐀𝐯𝐢𝐬𝐨| `𝐋𝐨 𝐬𝐢𝐞𝐧𝐭𝐨 𝐞𝐬𝐭𝐞 𝐜𝐨𝐦𝐚𝐧𝐝𝐨 𝐬𝐨𝐥𝐨 𝐞𝐬 𝐩𝐚𝐫𝐚 𝐦𝐢 𝐜𝐫𝐞𝐚𝐝𝐨𝐫`🚫",
+    owner: "> ╰➤ _ |𝐀𝐯𝐢𝐬𝐨| *` 𝙋𝙚𝙧𝙙𝙤𝙣 𝙨𝙤𝙡𝙤 𝙢𝙞𝙨 𝙘𝙧𝙚𝙖𝙙𝙤𝙧𝙚𝙨 𝙥𝙪𝙚𝙙𝙚𝙣 𝙪𝙨𝙖𝙧𝙡𝙤 😴.`*_",
+    mods: "> ╰➤ _*|𝐀𝐯𝐢𝐬𝐨| `𝐄𝐡 𝐥𝐨 𝐬𝐢𝐞𝐧𝐭𝐨 𝐞𝐬𝐭𝐨 𝐬𝐨𝐥𝐨 𝐞𝐬 𝐩𝐚𝐫𝐚 𝐥𝐨𝐬 𝐦𝐨𝐝𝐬 ⚡`*_",
+    premium: "> ╰➤ |𝐀𝐯𝐢𝐬𝐨| *`🔑 𝐍𝐎 𝐄𝐑𝐄𝐒 𝐔𝐒𝐔𝐀𝐑𝐈𝐎 𝐏𝐑𝐄𝐌𝐈𝐔𝐌 𝐇𝐀𝐁𝐋𝐀 𝐂𝐎𝐍 𝐌𝐈 𝐂𝐑𝐄𝐀𝐃𝐎𝐑`*_",
+    group: "> ╰➤ |𝐀𝐯𝐢𝐬𝐨|  _*`↘️ 𝐄𝐒𝐓𝐄 𝐂𝐎𝐌𝐀𝐍𝐃𝐎́ 𝐒𝐎𝐋𝐎 𝐅𝐔𝐍𝐂𝐈𝐎𝐍𝐀 𝐄𝐍 𝐆𝐑𝐔𝐏𝐎𝐒`*_",
+    private: "> ╰➤ |𝐀𝐯𝐢𝐬𝐨|  _*`💬 𝐔𝐒𝐀 𝐄𝐋 𝐂𝐇𝐀𝐓 𝐏𝐑𝐈𝐕𝐀𝐃𝐎 𝐏𝐀𝐑𝐀 𝐄𝐒𝐓𝐄 𝐂𝐎𝐌𝐀𝐍𝐃𝐎`*_",
+    admin: "> ╰➤ |𝐀𝐯𝐢𝐬𝐨| _*`𝐓𝐔 𝐍𝐎 𝐄𝐑𝐄𝐒 𝐀𝐃𝐌𝐈𝐍 😝`*_",
+    botAdmin: "> ╰➤ |𝐀𝐯𝐢𝐬𝐨| _*`⚠️ 𝐍𝐄𝐂𝐄𝐒𝐈𝐓𝐎 𝐒𝐄𝐑 𝐀𝐃𝐌𝐈𝐍 𝐏𝐀𝐑𝐀 𝐔𝐒𝐀𝐑 𝐋𝐀𝐒 𝐅𝐔𝐍𝐂𝐈𝐎𝐍𝐄𝐒`*_",
+    restrict: "> _*`𝐂𝐎𝐌𝐀𝐍𝐃𝐎 𝐀𝐏𝐀𝐆𝐀𝐃𝐎 𝐏𝐎𝐑 𝐌𝐈 𝐃𝐔𝐄Ñ𝐎`*_"
   }[type]
 
   if (!msg) return
@@ -273,7 +349,7 @@ global.dfail = async (type, m, conn, command = "", usedPrefix = ".", user2 = "us
         participant: "0@s.whatsapp.net"
       }
     }
-  } catch {}
+  } catch { }
 
   await conn.sendMessage(
     m.chat,
@@ -304,17 +380,36 @@ export async function handler(chatUpdate) {
     if (!m.text) return
 
     const _user = global.db?.data?.users?.[m.sender] || {}
-    const botJid = conn.decodeJid(conn.user.id)
-
-    const isROwner = [
-      botJid,
-      ...(global.owner || []).map(v => v[0].replace(/\D/g, "") + (v[1] === "jid" ? "@s.whatsapp.net" : "@lid"))
-    ].includes(m.sender)
-
+    const sendNum = String(m?.sender || '').replace(/[^0-9]/g, '')
+    const normalizeNumber = (jid) => String(jid || '').replace(/[^0-9]/g, '')
+    const cleanJid = (jid) => String(jid || '').split(':')[0] || ''
+    const botJid = normalizeNumber(cleanJid(conn.decodeJid?.(conn.user?.id) || conn.user?.id))
+    const isROwner = [botJid, ...(global.owner || []).map(([number]) => normalizeNumber(number))]
+      .filter(Boolean)
+      .includes(sendNum)
     const isOwner = isROwner || m.fromMe
+    const isMods = isOwner || (global.mods || []).map((v) => normalizeNumber(v)).includes(sendNum)
+    const isPrems = isROwner || (global.prems || []).map((v) => normalizeNumber(v)).includes(sendNum) || _user?.prem === true
 
-    const isMods = isOwner || (global.mods || []).map(v => v.replace(/\D/g, "") + "@s.whatsapp.net").includes(m.sender)
-    const isPrems = isROwner || _user.prem === true || (global.prems || []).map(v => v.replace(/\D/g, "") + "@s.whatsapp.net").includes(m.sender)
+    m.exp = (m.exp || 0) + Math.ceil(Math.random() * 10)
+    const prefix = /^[./#!]/
+
+    let usedPrefix = ""
+    let body = m.text.trim()
+
+    if (prefix.test(body)) {
+      usedPrefix = body.match(prefix)?.[0] || ""
+      body = body.slice(usedPrefix.length).trim()
+    }
+
+    const args = body.split(/ +/)
+    const command = args.shift()?.toLowerCase() || ""
+    const text = args.join(" ")
+
+    const isBannedChat = m.isGroup && isChatBanned(m.chat)
+    if (isBannedChat && command !== "unbanchat") {
+      return
+    }
 
     for (const plugin of Object.values(global.plugins)) {
       if (typeof plugin?.all === "function") {
@@ -327,68 +422,42 @@ export async function handler(chatUpdate) {
       }
     }
 
-    m.exp = (m.exp || 0) + Math.ceil(Math.random() * 10)
-const prefix = /^[./#!]/
-
-let usedPrefix = ""
-let body = m.text.trim()
-
-if (prefix.test(body)) {
-  usedPrefix = body.match(prefix)?.[0] || ""
-  body = body.slice(usedPrefix.length).trim()
-}
-
-const args = body.split(/ +/)
-const command = args.shift()?.toLowerCase() || ""
-const text = args.join(" ")
-
     let groupMetadata = {}
+    let participants = []
     if (m.isGroup) {
-      if (global.groupMetaCache.has(m.chat)) {
-        groupMetadata = global.groupMetaCache.get(m.chat)
-      } else {
-        try {
-          groupMetadata = await conn.groupMetadata(m.chat)
-          global.groupMetaCache.set(m.chat, groupMetadata)
-          setTimeout(() => { global.groupMetaCache.delete(m.chat) }, 10 * 60 * 1000)
-        } catch {
-          groupMetadata = {}
-        }
+      try {
+        groupMetadata = (conn.chats?.[m.chat]?.metadata || await conn.groupMetadata(m.chat).catch(() => null)) || {}
+        participants = groupMetadata.participants || []
+      } catch (e) {
+        groupMetadata = {}
+        participants = []
+        console.error('❌ Error obteniendo metadata del grupo:', e?.message || e)
       }
     }
 
-const participants = m.isGroup ? groupMetadata.participants || [] : []
-
-const user = m.isGroup
-  ? participants.find(u => conn.decodeJid(u.id) === m.sender) || {}
-  : {}
-
-const bot = m.isGroup
-  ? participants.find(u =>
-      [botJid, conn.decodeJid(conn.user?.lid || '')]
-        .includes(conn.decodeJid(u.id))
-    ) || {}
-  : {}
-
-const isRAdmin = user?.admin === 'superadmin'
-const isAdmin = isRAdmin || user?.admin === 'admin'
-const isBotAdmin = ['admin', 'superadmin'].includes(bot?.admin)
+    const senderNum = normalizeNumber(m.sender)
+    const botNums = [conn.user?.jid, conn.user?.lid].map((jid) => normalizeNumber(cleanJid(jid))).filter(Boolean)
+    const user = m.isGroup ? participants.find((u) => normalizeNumber(u.id) === senderNum) || {} : {}
+    const bot = m.isGroup ? participants.find((u) => botNums.includes(normalizeNumber(u.id))) || {} : {}
+    const isRAdmin = user?.admin === 'superadmin'
+    const isAdmin = isRAdmin || user?.admin === 'admin'
+    const isBotAdmin = !!bot?.admin || bot?.admin === 'admin'
 
     for (const name in global.plugins) {
       const plugin = global.plugins[name]
       if (!plugin) continue
 
-     let match = false
+      let match = false
 
-     if (plugin.customPrefix instanceof RegExp) {
-     match = plugin.customPrefix.test(m.text)
-     } else if (plugin.command instanceof RegExp) {
-     match = plugin.command.test(command)
-    } else if (Array.isArray(plugin.command)) {
-    match = plugin.command.some(cmd => String(cmd).toLowerCase() === command)
-    } else if (typeof plugin.command === "string") {
-    match = plugin.command.toLowerCase() === command
-    }
+      if (plugin.customPrefix instanceof RegExp) {
+        match = plugin.customPrefix.test(m.text)
+      } else if (plugin.command instanceof RegExp) {
+        match = plugin.command.test(command)
+      } else if (Array.isArray(plugin.command)) {
+        match = plugin.command.some(cmd => String(cmd).toLowerCase() === command)
+      } else if (typeof plugin.command === "string") {
+        match = plugin.command.toLowerCase() === command
+      }
 
       if (!match) continue
 
