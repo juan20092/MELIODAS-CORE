@@ -8,7 +8,7 @@ global.author = "prueba"
 
 
 global.owner = [
-  ["573223702049", "jid"] 
+  ["165043362652249", "jid"] 
 ]
 
 global.mods = [] 
