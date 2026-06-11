@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 let handler = async (m, { conn, isAdmin, isBotAdmin }) => {
-  if (!m.isGroup) throw '❖ Este comando es solo para grupos'
+  if (!m.isGroup) throw '❖ *ᴇꜱᴛᴇ ᴄᴏᴍᴀɴᴅᴏ ᴇꜱ ꜱᴏʟᴏ ᴘᴀʀᴀ ɢʀᴜᴘᴏꜱ*'
   if (!isAdmin) return global.dfail('admin', m, conn)
   if (!isBotAdmin) return global.dfail('botAdmin', m, conn)
 
@@ -41,9 +41,10 @@ let handler = async (m, { conn, isAdmin, isBotAdmin }) => {
   let code = await conn.groupInviteCode(m.chat)
   let link = `https://chat.whatsapp.com/${code}`
 
-  let pp = './src/avatar_contact.png'
+  let pp = imgUrl
   try {
-    pp = await conn.profilePictureUrl(m.chat, 'image')
+    const profilePic = await conn.profilePictureUrl(m.chat, 'image')
+    if (profilePic) pp = profilePic
   } catch {}
 
   let groupName = await conn.getName(m.chat)
@@ -89,5 +90,4 @@ handler.tags = ['grupo']
 handler.group = true
 handler.admin = true
 handler.botAdmin = true
-
 export default handler
