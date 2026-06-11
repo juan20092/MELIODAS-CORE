@@ -35,6 +35,28 @@ import { makeWASocket, smsg } from './wzr/simple.js'
 import store from './wzr/store.js'
 import { logMessages } from './wzr/logger.js'
 
+const muteConsolePatterns = [/^\s*Closing session:/i, /SessionEntry\s*\{/i]
+const shouldMuteConsole = (...args) => {
+  const text = args
+    .map(arg => {
+      if (typeof arg === 'string') return arg
+      try { return format(arg) } catch { return String(arg) }
+    })
+    .join(' ')
+
+  return muteConsolePatterns.some(pattern => pattern.test(text))
+}
+
+const originalConsoleLog = console.log.bind(console)
+const originalConsoleWarn = console.warn.bind(console)
+const originalConsoleError = console.error.bind(console)
+const originalConsoleInfo = console.info.bind(console)
+
+console.log = (...args) => { if (!shouldMuteConsole(...args)) originalConsoleLog(...args) }
+console.warn = (...args) => { if (!shouldMuteConsole(...args)) originalConsoleWarn(...args) }
+console.error = (...args) => { if (!shouldMuteConsole(...args)) originalConsoleError(...args) }
+console.info = (...args) => { if (!shouldMuteConsole(...args)) originalConsoleInfo(...args) }
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname  = dirname(__filename)
 const { chain }  = lodash
@@ -167,7 +189,21 @@ const reloadPlugin = async (_, filename) => {
   global.plugins = Object.fromEntries(Object.entries(global.plugins).sort(([a],[b]) => a.localeCompare(b)))
 }
 
-watch(pluginFolder, reloadPlugin)
+const startPluginWatcher = () => {
+  const onChange = (eventType, filename) => {
+    if (!filename || !pluginFilter(filename)) return
+    reloadPlugin(eventType, filename).catch(console.error)
+  }
+
+  try {
+    return watch(pluginFolder, onChange)
+  } catch (e) {
+    console.warn(chalk.yellow(`⚠️ El watcher de plugins no está disponible: ${e.message}`))
+    return null
+  }
+}
+
+startPluginWatcher()
 
 let handler = await import('./handler.js')
 
@@ -361,5 +397,3 @@ async function _quickTest() {
 }
 
 _quickTest().catch(console.error)
-
-
