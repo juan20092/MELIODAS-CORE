@@ -171,13 +171,48 @@ export async function handler(chatUpdate) {
 import { smsg } from "./wzr/simple.js"
 import fs from "fs"
 import path from "path"
+import { fileURLToPath, pathToFileURL } from "url"
 import axios from "axios"
 import { isChatBanned } from "./wzr/banlist.js"
 
-global.plugins = {}
+global.plugins ||= {}
 global.groupMetaCache ||= new Map()
 
-const pluginFolder = "./plugins"
+const pluginFolder = path.join(path.dirname(fileURLToPath(import.meta.url)), "plugins")
+
+async function loadPluginsFallback() {
+  if (global.__pluginsManagedByEntryPoint) return
+
+  if (!fs.existsSync(pluginFolder)) {
+    fs.mkdirSync(pluginFolder, { recursive: true })
+    return
+  }
+
+  global.plugins = {}
+
+  const walk = async (dir) => {
+    const entries = fs.readdirSync(dir, { withFileTypes: true })
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name)
+      if (entry.isDirectory()) {
+        await walk(fullPath)
+      } else if (entry.isFile() && entry.name.endsWith(".js")) {
+        const relativePath = path.relative(pluginFolder, fullPath).replace(/\\/g, "/")
+        try {
+          const mod = await import(`${pathToFileURL(fullPath).href}?update=${Date.now()}`)
+          global.plugins[relativePath] = mod.default || mod
+        } catch (e) {
+          console.error(`❌ Error cargando plugin → ${relativePath}`)
+          console.error(e?.stack || e)
+        }
+      }
+    }
+  }
+
+  await walk(pluginFolder)
+}
+
+await loadPluginsFallback()
 
 function normalizeJid(jid, conn) {
   if (!jid) return ''
@@ -263,14 +298,14 @@ async function loadPlugins() {
   const files = getFilesRecursively(pluginFolder)
 
   for (const file of files) {
+    const relativePath = path.relative(pluginFolder, file).replace(/\\/g, "/")
     try {
-      const modulePath = "./" + file.replace(/\\/g, "/")
-      const mod = await import(`${modulePath}?update=${Date.now()}`)
-      global.plugins[file] = mod.default || mod
-      console.log(`✅ Plugin cargado → ${file}`)
+      const mod = await import(`${pathToFileURL(file).href}?update=${Date.now()}`)
+      global.plugins[relativePath] = mod.default || mod
+      console.log(`✅ Plugin cargado → ${relativePath}`)
     } catch (e) {
-      console.error(`❌ Error cargando plugin → ${file}`)
-      console.error(e.stack || e)
+      console.error(`❌ Error cargando plugin → ${relativePath}`)
+      console.error(e?.stack || e)
     }
   }
   console.log(`✅ ${Object.keys(global.plugins).length} plugins cargados correctamente.`)
@@ -283,15 +318,15 @@ const watchPlugins = () => {
     try {
       if (!file || !file.endsWith(".js")) return
       const fullPath = path.join(pluginFolder, file)
-      delete global.plugins[fullPath]
+      const relativePath = path.relative(pluginFolder, fullPath).replace(/\\/g, "/")
+      delete global.plugins[relativePath]
 
-      const modulePath = "./" + fullPath.replace(/\\/g, "/")
-      const mod = await import(`${modulePath}?update=${Date.now()}`)
-      global.plugins[fullPath] = mod.default || mod
-      console.log(`♻️ Plugin recargado → ${fullPath}`)
+      const mod = await import(`${pathToFileURL(fullPath).href}?update=${Date.now()}`)
+      global.plugins[relativePath] = mod.default || mod
+      console.log(`♻️ Plugin recargado → ${relativePath}`)
     } catch (e) {
       console.error(`❌ Error recargando → ${file}`)
-      console.error(e.stack || e)
+      console.error(e?.stack || e)
     }
   }
 
@@ -383,13 +418,24 @@ export async function handler(chatUpdate) {
     const sendNum = String(m?.sender || '').replace(/[^0-9]/g, '')
     const normalizeNumber = (jid) => String(jid || '').replace(/[^0-9]/g, '')
     const cleanJid = (jid) => String(jid || '').split(':')[0] || ''
+    const normalizeOwnerList = (value) => {
+      if (!Array.isArray(value)) return []
+      return value
+        .map((entry) => {
+          if (Array.isArray(entry)) return normalizeNumber(entry[0])
+          if (typeof entry === 'string' || typeof entry === 'number') return normalizeNumber(entry)
+          return ''
+        })
+        .filter(Boolean)
+    }
     const botJid = normalizeNumber(cleanJid(conn.decodeJid?.(conn.user?.id) || conn.user?.id))
-    const isROwner = [botJid, ...(global.owner || []).map(([number]) => normalizeNumber(number))]
-      .filter(Boolean)
-      .includes(sendNum)
+    const ownerNumbers = normalizeOwnerList(global.owner)
+    const modNumbers = normalizeOwnerList(global.mods)
+    const premNumbers = normalizeOwnerList(global.prems)
+    const isROwner = [botJid, ...ownerNumbers].includes(sendNum)
     const isOwner = isROwner || m.fromMe
-    const isMods = isOwner || (global.mods || []).map((v) => normalizeNumber(v)).includes(sendNum)
-    const isPrems = isROwner || (global.prems || []).map((v) => normalizeNumber(v)).includes(sendNum) || _user?.prem === true
+    const isMods = isOwner || modNumbers.includes(sendNum)
+    const isPrems = isROwner || premNumbers.includes(sendNum) || _user?.prem === true
 
     m.exp = (m.exp || 0) + Math.ceil(Math.random() * 10)
     const prefix = /^[./#!]/
