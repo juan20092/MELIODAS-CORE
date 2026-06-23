@@ -1,1 +1,1 @@
-# NUEVO-BOT-USO-PROPIO
+<img src="https://cdn.dix.lat/me/tmp/4bf855c5-d25f-4533-b69b-be2b089067c4.gif">
