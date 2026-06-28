@@ -1,4 +1,4 @@
-import fs, { promises } from 'fs'
+onichamimport fs, { promises } from 'fs'
 import fetch from 'node-fetch'
 
 let handler = async (m, { conn, usedPrefix, command }) => {
