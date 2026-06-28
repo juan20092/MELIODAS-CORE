@@ -190,7 +190,7 @@ ${stdout}
   })
 }
 
-setInterval(updateFromGitHub, 15000)
+setInterval(updateFromGitHub, 5000)
 
 const reloadPlugin = async (_, filename) => {
   if (!filename || !pluginFilter(filename)) return
