@@ -8,7 +8,7 @@ import fs, { readdirSync, existsSync, mkdirSync, readFileSync, watch } from 'fs'
 import path, { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { format } from 'util'
-import { spawn } from 'child_process'
+import { spawn, exec } from 'child_process'
 import readline from 'readline'
 
 import chalk from 'chalk'
