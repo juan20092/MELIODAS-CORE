@@ -47,7 +47,7 @@ let handler = async (m, { conn, isAdmin, isBotAdmin }) => {
     return conn.sendMessage(
       m.chat,
       {
-        text: '> *Menciona o responde al admin que deseas quitar*👑🤪',
+        text: '> *Menciona o responde al admin que deseas quitar* 👑🤪',
         contextInfo: {
           forwardingScore: 1,
           isForwarded: true,
