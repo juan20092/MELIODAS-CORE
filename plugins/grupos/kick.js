@@ -46,7 +46,7 @@ let handler = async (m, { conn, isAdmin, isBotAdmin }) => {
     return conn.sendMessage(
       m.chat,
       {
-        text: '> ⟪ 🦖 𝗺𝗲𝗻𝗰𝗶𝗼𝗻𝗮 𝗼 𝗿𝗲𝘀𝗽𝗼𝗻𝗱𝗲 𝗮𝗹 𝘂𝘀𝘂𝗮𝗿𝗶𝗼 𝗾𝘂𝗲 𝗱𝗲𝘀𝗲𝗮𝘀 𝗲𝗹𝗶𝗺𝗶𝗻𝗮𝗿 ⟫',
+        text: '> ⟪ 🧹 *Hora de limpiar el grupo. ¿Quien es el afortunado?*📵🚷😈 ⟫',
         contextInfo: {
           forwardingScore: 1,
           isForwarded: true,
