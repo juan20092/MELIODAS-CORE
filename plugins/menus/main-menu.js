@@ -275,25 +275,24 @@ const uptime = clockString(process.uptime() * 1000)
 
   const randomVideo = videoUrl[Math.floor(Math.random() * videoUrl.length)]
 
-await conn.sendMessage(m.chat, {
-  video: { url: randomVideo },
-  caption: '...'
-})
-      gifPlayback: true,
-      caption: menu,
-      mentions: [m.sender],
-      contextInfo: {
-        forwardingScore: 1,
-        isForwarded: true,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: global.ch || '120363419404216418@newsletter',
-          newsletterName: '↯ 𝘔𝘌𝘓I𝘖𝘋𝘈𝘚 𝘉𝘖𝘛 - 𝘊𝘏𝘈𝘕𝘕𝘌𝘓 𝟮𝟬𝟮𝟯'
-        }
+await conn.sendMessage(
+  m.chat,
+  {
+    video: { url: randomVideo },
+    gifPlayback: true,
+    caption: menu,
+    mentions: [m.sender],
+    contextInfo: {
+      forwardingScore: 1,
+      isForwarded: true,
+      forwardedNewsletterMessageInfo: {
+        newsletterJid: global.ch || '120363419404216418@newsletter',
+        newsletterName: '↯ 𝘔𝘌𝘓I𝘖𝘋𝘈𝘚 𝘉𝘖𝘛 - 𝘊𝘏𝘈𝘕𝘕𝘌𝘓 𝟮𝟬𝟮𝟯'
       }
-    },
-    { quoted: fakeQuoted }
-  )
-}
+    }
+  },
+  { quoted: fakeQuoted }
+)
 
 handler.help = ['menu']
 handler.tags = ['main']
