@@ -76,7 +76,7 @@ let handler = async (m, { conn, isAdmin, isBotAdmin }) => {
   await conn.sendMessage(
     m.chat,
     {
-      text: '✅ *ᴜsᴇʀ ᴇʟɪᴍɪɴᴀᴅᴏ ᴄᴏɴ ᴇxɪᴛᴏ*', 
+      text: '> 😈 *Se lo gano adios basura*', 
       contextInfo: {
         forwardingScore: 1,
         isForwarded: true,
