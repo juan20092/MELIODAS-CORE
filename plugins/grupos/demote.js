@@ -47,7 +47,7 @@ let handler = async (m, { conn, isAdmin, isBotAdmin }) => {
     return conn.sendMessage(
       m.chat,
       {
-        text: '> *Menciona o responde al admin que deseas destronar*👑🤪',
+        text: '> *Menciona o responde al admin que deseas quitar*👑🤪',
         contextInfo: {
           forwardingScore: 1,
           isForwarded: true,
@@ -77,7 +77,7 @@ let handler = async (m, { conn, isAdmin, isBotAdmin }) => {
   await conn.sendMessage(
     m.chat,
     {
-      text: '> *Acaba de ser destronado del grupo de admins* 😈🤣',
+      text: '> *Acaba de ser quitado del grupo de admins* 😈🤣',
       contextInfo: {
         forwardingScore: 1,
         isForwarded: true,
