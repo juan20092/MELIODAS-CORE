@@ -45,8 +45,11 @@ let handler = async (m, { conn, uptime }) => {
 ╰━━━━━━━━━━━╯
 
 ➥ ⋄ 𝐔𝐬𝐮𝐚𝐫𝐢𝐨 : @${m.sender.split('@')[0]}
+
 ➥ ⋄ 𝐂𝐫𝐞𝐚𝐝𝐨𝐫 : +573223702049
+
 ➥ ⋄ 𝐔𝐩𝐭𝐢𝐦𝐞 : ${uptime}
+
 ➥ ⋄ 𝐅𝐞𝐜𝐡𝐚 : \`\`\`${horarioFecha}\`\`\`
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -55,7 +58,6 @@ let handler = async (m, { conn, uptime }) => {
 ┣━━━━━━━━━━━━━━━━━━┫
 ┃ ৎ٠࣪⭑📜 ⋗ *menu*
 ┃ ৎ٠࣪⭑📜 ⋗ *menuff*
-┃ ৎ٠࣪⭑📚 ⋗ *menufreefire*
 ┗━━━━━━━━━━━━━━━━━━┛
 
   「 👥 *𝘎𝘙𝘜𝘗𝘖𝘚* 」  
@@ -77,11 +79,10 @@ let handler = async (m, { conn, uptime }) => {
 ┃ ৎ٠࣪⭑⏰ ⋗ *horario*
 ┃ ৎ٠࣪⭑🔗 ⋗ *link*
 ┃ ৎ٠࣪⭑🗑️ ⋗ *del*
-┃ ৎ٠࣪⭑🏴‍☠️ ⋗ *robargrupo*
 ┃ ৎ٠࣪⭑🖼️ ⋗ *setfotogrupo*
 ┃ ৎ٠࣪⭑✏️ ⋗ *setnamegrupo*
 ┃ ৎ٠࣪⭑📜 ⋗ *setreglas*
-┃ ৎ٠࣪⭑👋 ⋗ *setwelcome* <texto>
+┃ ৎ٠࣪⭑👋 ⋗ *setwelcome*
 ┃ ৎ٠࣪⭑👋 ⋗ *setbye*
 ┃ ৎ٠࣪⭑🎯 ⋗ *ruletaban*
 ┃ ৎ٠࣪⭑🎁 ⋗ *donarsala*
@@ -89,53 +90,45 @@ let handler = async (m, { conn, uptime }) => {
 
   「 📥 *𝘋𝘌𝘚𝘊𝘈𝘙𝘎𝘈𝘚* 」  
 ┣━━━━━━━━━━━━━━━━━━┫
-┃ ৎ٠࣪⭑🎵 ⋗ *play* <texto o link>
-┃ ৎ٠࣪⭑📱 ⋗ *apk* <nombre>
-┃ ৎ٠࣪⭑🎬 ⋗ *ytmp3* <link>
-┃ ৎ٠࣪⭑🎬 ⋗ *ytmp4* <link>
-┃ ৎ٠࣪⭑🎧 ⋗ *spotify* <texto>
+┃ ৎ٠࣪⭑🎵 ⋗ *play*
+┃ ৎ٠࣪⭑📱 ⋗ *apk*
+┃ ৎ٠࣪⭑🎬 ⋗ *ytmp3*
+┃ ৎ٠࣪⭑🎬 ⋗ *ytmp4*
+┃ ৎ٠࣪⭑🎧 ⋗ *spotify*
 ┃ ৎ٠࣪⭑🎧 ⋗ *spotifysearch*
-┃ ৎ٠࣪⭑📸 ⋗ *instagram* <link>
-┃ ৎ٠࣪⭑📸 ⋗ *pinterest* <texto>
-┃ ৎ٠࣪⭑🎭 ⋗ *tiktok* <link>
+┃ ৎ٠࣪⭑📸 ⋗ *instagram*
+┃ ৎ٠࣪⭑🎭 ⋗ *tiktok*
+<usuario>
 ┃ ৎ٠࣪⭑🎭 ⋗ *tiktokmr*
 ┃ ৎ٠࣪⭑🎥 ⋗ *fb* <link>
-┃ ৎ٠࣪⭑🐦 ⋗ *twitter* <link>
-┃ ৎ٠࣪⭑📂 ⋗ *mediafire* <link>
 ┗━━━━━━━━━━━━━━━━━━┛
 
-  「 🫀 *I𝘕𝘛𝘌𝘓I𝘎𝘌𝘕𝘊I𝘈 𝘈𝘙𝘛I𝘍I𝘊I𝘈𝘓* 」  
+  「 🫀 *𝘐𝘕𝘛𝘌𝘓𝘐𝘎𝘌𝘕𝘊𝘐𝘈 𝘈𝘙𝘛𝘐𝘍𝘐𝘊𝘐𝘈𝘓* 」  
 ┣━━━━━━━━━━━━━━━━━━┫
 ┃ ৎ٠࣪⭑✨ ⋗ *meta*
 ┃ ৎ٠࣪⭑🌌 ⋗ *geminis*
-┃ ৎ٠࣪⭑💬 ⋗ *chatgpt* <pregunta>
+┃ ৎ٠࣪⭑💬 ⋗ *chatpg*
 ┃ ৎ٠࣪⭑🎨 ⋗ *imagen*
 ┃ ৎ٠࣪⭑👁️ ⋗ *visión*
 ┗━━━━━━━━━━━━━━━━━━┛
 
-  「 🎭 *𝘚𝘛I𝘊𝘒𝘌𝘙𝘚* 」  
+  「 🎭 *𝘚𝘛𝘐𝘊𝘓𝘌𝘙𝘚* 」  
 ┣━━━━━━━━━━━━━━━━━━┫
 ┃ ৎ٠࣪⭑🖌️ ⋗ *qc* <texto>
 ┃ ৎ٠࣪⭑🎨 ⋗ *brat*
 ┃ ৎ٠࣪⭑🎨 ⋗ *bratv*
 ┃ ৎ٠࣪⭑😀 ⋗ *emojimix*
-┃ ৎ٠࣪⭑🏷️ ⋗ *wm* <texto>
+┃ ৎ٠࣪⭑🏷️ ⋗ *wm* <nombre>
 ┃ ৎ٠࣪⭑🌟 ⋗ *s*
 ┃ ৎ٠࣪⭑💩 ⋗ *scat*
 ┗━━━━━━━━━━━━━━━━━━┛
 
-  「 🔄 *𝘊𝘖𝘕𝘝𝘌𝘙𝘛I𝘋𝘖𝘙𝘌𝘚* 」  
+  「 🎨 *𝘌𝘋𝘐𝘊𝘐𝘖𝘕 & 𝘓𝘖𝘎𝘖𝘚* 」  
 ┣━━━━━━━━━━━━━━━━━━┫
 ┃ ৎ٠࣪⭑🔥 ⋗ *hd*
-┃ ৎ٠࣪⭑🖼️ ⋗ *png*
-┃ ৎ٠࣪⭑🖼️ ⋗ *toimg* <sticker>
-┃ ৎ٠࣪⭑🎞️ ⋗ *togif* <video>
-┃ ৎ٠࣪⭑🌐 ⋗ *tourl* <img o video>
-┗━━━━━━━━━━━━━━━━━━┛
-
-  「 🎨 *𝘌𝘋I𝘊I𝘖𝘕 & 𝘓𝘖𝘎𝘖𝘚* 」  
-┣━━━━━━━━━━━━━━━━━━┫
 ┃ ৎ٠࣪⭑🖼️ ⋗ *img* (reply)
+┃ ৎ٠࣪⭑🎞️ ⋗ *togif*
+┃ ৎ٠࣪⭑🌐 ⋗ *tourl*
 ┃ ৎ٠࣪⭑❤️ ⋗ *logocorazon*
 ┃ ৎ٠࣪⭑❤️ ⋗ *logopareja*
 ┃ ৎ٠࣪⭑🎄 ⋗ *logosad*
@@ -161,7 +154,7 @@ let handler = async (m, { conn, uptime }) => {
 ┃ ৎ٠࣪⭑🎬 ⋗ *logovideogaming*
 ┗━━━━━━━━━━━━━━━━━━┛
 
-  「 🎮 *𝘍𝘙𝘌𝘌 𝘍I𝘙𝘌 & 𝘙𝘌𝘎𝘓𝘈𝘚* 」  
+  「 🎮 *𝘍𝘙𝘌𝘌 𝘍𝘐𝘙𝘌* 」  
 ┣━━━━━━━━━━━━━━━━━━┫
 ┃ ৎ٠࣪⭑⚔️ ⋗ *4vs4*
 ┃ ৎ٠࣪⭑⚔️ ⋗ *6vs6*
@@ -174,53 +167,9 @@ let handler = async (m, { conn, uptime }) => {
 ┃ ৎ٠࣪⭑🏝️ ⋗ *bermuda*
 ┃ ৎ٠࣪⭑💣 ⋗ *guerra*
 ┃ ৎ٠࣪⭑📜 ⋗ *reglasclk*
-┃ ৎ٠࣪⭑📜 ⋗ *reglasword*
 ┗━━━━━━━━━━━━━━━━━━┛
 
-  「 🎠 *𝘋I𝘕𝘈𝘔I𝘊𝘈𝘚 𝘛𝘈𝘎* 」  
-┣━━━━━━━━━━━━━━━━━━┫
-┃ ৎ٠࣪⭑🔥 ⋗ *penetrar* <tag>
-┃ ৎ٠࣪⭑💥 ⋗ *golpear* <tag>
-┃ ৎ٠࣪⭑🤗 ⋗ *abrazar* <tag>
-┃ ৎ٠࣪⭑😈 ⋗ *coger* <tag>
-┃ ৎ٠࣪⭑😘 ⋗ *besar* <tag>
-┃ ৎ٠࣪⭑🔥 ⋗ *follar* <tag>
-┃ ৎ٠࣪⭑👋 ⋗ *saludar* <tag>
-┃ ৎ٠࣪⭑💃 ⋗ *bailar* <tag>
-┃ ৎ٠࣪⭑🍲 ⋗ *cenar* <tag>
-┃ ৎ٠࣪⭑😡 ⋗ *angry* <tag>
-┃ ৎ٠࣪⭑😤 ⋗ *enojado* <tag>
-┃ ৎ٠࣪⭑🥱 ⋗ *aburrido* <tag>
-┃ ৎ٠࣪⭑👏 ⋗ *aplaudir* <tag>
-┃ ৎ٠࣪⭑😭 ⋗ *llorar* <tag>
-┃ ৎ٠࣪⭑🍺 ⋗ *borracho* <tag>
-┃ ৎ٠࣪⭑🍔 ⋗ *comer* <tag>
-┃ ৎ٠࣪⭑👋 ⋗ *palmada* <tag>
-┃ ৎ٠࣪⭑🥳 ⋗ *feliz* <tag>
-┃ ৎ٠࣪⭑💀 ⋗ *matar* <tag>
-┃ ৎ٠࣪⭑😂 ⋗ *reirse* <tag>
-┃ ৎ٠࣪⭑💥 ⋗ *bofetada* <tag>
-┃ ৎ٠࣪⭑💤 ⋗ *sleep* <tag>
-┃ ৎ٠࣪⭑🛌 ⋗ *dormir* <tag>
-┃ ৎ٠࣪⭑👣 ⋗ *pisar* <tag>
-┃ ৎ٠࣪⭑🤔 ⋗ *pensar* <tag>
-┃ ৎ٠࣪⭑🤰 ⋗ *embarazar* <tag>
-┃ ৎ٠࣪⭑🏃 ⋗ *correr* <tag>
-┃ ৎ٠࣪⭑🥺 ⋗ *sad* <tag>
-┃ ৎ٠࣪⭑😢 ⋗ *triste* <tag>
-┃ ৎ٠࣪⭑😨 ⋗ *asustada/o* <tag>
-┃ ৎ٠࣪⭑😳 ⋗ *timido/a* <tag>
-┃ ৎ٠࣪⭑🚶 ⋗ *caminar* <tag>
-┃ ৎ٠࣪⭑🎭 ⋗ *drama* <tag>
-┃ ৎ٠࣪⭑😉 ⋗ *guiñar* <tag>
-┃ ৎ٠࣪⭑😎 ⋗ *presumir* <tag>
-┃ ৎ٠࣪⭑🙂 ⋗ *sonreir* <tag>
-┃ ৎ٠࣪⭑🤝 ⋗ *mano* <tag>
-┃ ৎ٠࣪⭑👊 ⋗ *bullying* <tag>
-┃ ৎ٠࣪⭑👋 ⋗ *hola* <tag>
-┗━━━━━━━━━━━━━━━━━━┛
-
-  「 🧩 *𝘑𝘜𝘌𝘎𝘖𝘚 & 𝘋I𝘓𝘌𝘔𝘈𝘚* 」  
+  「 🧩 *𝘑𝘜𝘌𝘎𝘖𝘚 & 𝘋𝘐𝘝𝘌𝘙𝘚𝘐𝘖𝘕* 」  
 ┣━━━━━━━━━━━━━━━━━━┫
 ┃ ৎ٠࣪⭑❓ ⋗ *acertijo*
 ┃ ৎ٠࣪⭑❓ ⋗ *pregunta*
@@ -233,50 +182,55 @@ let handler = async (m, { conn, uptime }) => {
 ┃ ৎ٠࣪⭑🤝 ⋗ *divorcio*
 ┃ ৎ٠࣪⭑🤝 ⋗ *matrimonios*
 ┃ ৎ٠࣪⭑👫 ⋗ *formarpareja*
-┃ ৎ٠࣪⭑👫 ⋗ *love* <tag>
-┃ ৎ٠࣪⭑😍 ⋗ *minovia* <tag>
-┃ ৎ٠࣪⭑😍 ⋗ *minovio* <tag>
-┃ ৎ٠࣪⭑💍 ⋗ *sernovios* <tag>
-┃ ৎ٠࣪⭑💖 ⋗ *enamorar* <tag>
-┃ ৎ٠࣪⭑💕 ⋗ *amor* <tag>
-┃ ৎ٠࣪⭑📊 ⋗ *topparejas*
-┃ ৎ٠࣪⭑🤝 ⋗ *amistad*
+┃ ৎ٠࣪⭑👫 ⋗ *love*
+┃ ৎ٠࣪⭑😍 ⋗ *minovia*
+┃ ৎ٠࣪⭑😍 ⋗ *minovio*
 ┃ ৎ٠࣪⭑😍 ⋗ *enamorada*
+┃ ৎ٠࣪⭑🤗 ⋗ *abrazar*
+┃ ৎ٠࣪⭑🤗 ⋗ *besar*
+┃ ৎ٠࣪⭑💃 ⋗ *triste*
+┃ ৎ٠࣪⭑🔥 ⋗ *follar*
 ┃ ৎ٠࣪⭑🔥 ⋗ *violar*
+┃ ৎ٠࣪⭑🔥 ⋗ *penetrar*
 ┃ ৎ٠࣪⭑🔥 ⋗ *horny*
 ┃ ৎ٠࣪⭑👑 ⋗ *top* <texto>
-┃ ৎ٠࣪⭑👿 ⋗ *cachudo/a*
-┃ ৎ٠࣪⭑😬 ⋗ *feo/a*
+┃ ৎ٠࣪⭑👿 ⋗ *cachudo*
+┃ ৎ٠࣪⭑👿 ⋗ *cachuda*
+┃ ৎ٠࣪⭑😬 ⋗ *feo*
+┃ ৎ٠࣪⭑😬 ⋗ *fea*
 ┃ ৎ٠࣪⭑🌈 ⋗ *gay*
 ┃ ৎ٠࣪⭑🌈 ⋗ *lesbiana*
-┃ ৎ٠࣪⭑🐵 ⋗ *pajero/a*
-┃ ৎ٠࣪⭑🐵 ⋗ *enano/a*
-┃ ৎ٠࣪⭑🇵🇪 ⋗ *peruano/a*
+┃ ৎ٠࣪⭑🐵 ⋗ *pajero*
+┃ ৎ٠࣪⭑🐵 ⋗ *pajera*
+┃ ৎ٠࣪⭑🐵 ⋗ *enano*
+┃ ৎ٠࣪⭑🐵 ⋗ *enana*
+┃ ৎ٠࣪⭑🇵🇪 ⋗ *peruano*
+┃ ৎ٠࣪⭑🇵🇪 ⋗ *peruana*
 ┃ ৎ٠࣪⭑🇵🇪 ⋗ *rata*
-┃ ৎ٠࣪⭑😈 ⋗ *puto/a*
-┃ ৎ٠࣪⭑😈 ⋗ *prostituta/o*
-┃ ৎ٠࣪⭑✊🏿 ⋗ *negro/a*
-┃ ৎ٠࣪⭑✊🏿 ⋗ *adoptado/a*
-┃ ৎ٠࣪⭑🤕 ⋗ *manco/a*
+┃ ৎ٠࣪⭑😈 ⋗ *puto*
+┃ ৎ٠࣪⭑😈 ⋗ *puta*
+┃ ৎ٠࣪⭑😈 ⋗ *prostituto*
+┃ ৎ٠࣪⭑😈 ⋗ *prostituta*
+┃ ৎ٠࣪⭑✊🏿 ⋗ *negro*
+┃ ৎ٠࣪⭑✊🏿 ⋗ *negra*
+┃ ৎ٠࣪⭑✊🏿 ⋗ *adoptado*
+┃ ৎ٠࣪⭑✊🏿 ⋗ *adoptada*
+┃ ৎ٠࣪⭑🤕 ⋗ *manco*
+┃ ৎ٠࣪⭑🤕 ⋗ *manca*
 ┗━━━━━━━━━━━━━━━━━━┛
 
-  「 🥀 *𝘍𝘙𝘈𝘚𝘌𝘚* 」  
+  「 ⚙️ *𝘊𝘖𝘕𝘍𝘐𝘎𝘜𝘙𝘈𝘊𝘐𝘖𝘕 / 𝘖𝘕-𝘖𝘍𝘍* 」  
 ┣━━━━━━━━━━━━━━━━━━┫
-┃ ৎ٠࣪⭑🥀 ⋗ *fraseromantica*
-┃ ৎ٠࣪⭑👤 ⋗ *personalidad* <tag>
-┃ ৎ٠࣪⭑📜 ⋗ *frases*
-┃ ৎ٠࣪⭑📸 ⋗ *camara*
-┃ ৎ٠࣪⭑📣 ⋗ *facto*
-┗━━━━━━━━━━━━━━━━━━┛
-
-  「 ⚙️ *𝘊𝘖𝘕𝘍I𝘎𝘜𝘓𝘈𝘊I𝘖𝘕 / 𝘖𝘕-𝘖𝘍𝘍* 」  
-┣━━━━━━━━━━━━━━━━━━┫
-┃ ৎ٠࣪⭑⚙️ ⋗ *on/off welcome*
-┃ ৎ٠࣪⭑⚙️ ⋗ *on/off nsfw*
-┃ ৎ٠࣪⭑⚙️ ⋗ *on/off antilink*
-┃ ৎ٠࣪⭑⚙️ ⋗ *on/off antiarabes*
-┃ ৎ٠࣪⭑⚙️ ⋗ *on/off detect*
-┃ ৎ٠࣪⭑⚙️ ⋗ *on/off modoadmin*
+┃ ৎ٠࣪⭑⚙️ ⋗ *on welcome*
+┃ ৎ٠࣪⭑⚙️ ⋗ *off welcome*
+┃ ৎ٠࣪⭑⚙️ ⋗ *on antilink*
+┃ ৎ٠࣪⭑⚙️ ⋗ *off antilink*
+┃ ৎ٠࣪⭑⚙️ ⋗ *on antiarabes*
+┃ ৎ٠࣪⭑⚙️ ⋗ *off antiarabes*
+┃ ৎ٠࣪⭑⚙️ ⋗ *on detect*
+┃ ৎ٠࣪⭑⚙️ ⋗ *off detect*
+┃ ৎ٠࣪⭑⚙️ ⋗ *on modoadmin*
+┃ ৎ٠࣪⭑⚙️ ⋗ *off modoadmin*
 ┃ ৎ٠࣪⭑⚙️ ⋗ *enable*
 ┃ ৎ٠࣪⭑⚙️ ⋗ *disable*
 ┗━━━━━━━━━━━━━━━━━━┛
@@ -284,23 +238,21 @@ let handler = async (m, { conn, uptime }) => {
   「 👑 *𝘊𝘙𝘌𝘈𝘋𝘖𝘓 / 𝘖𝘞𝘕𝘌𝘙* 」  
 ┣━━━━━━━━━━━━━━━━━━┫
 ┃ ৎ٠࣪⭑📡 ⋗ *ping*
-┃ ৎ٠࣪⭑📡 ⋗ *runtime* / *tiempo*
+┃ ৎ٠࣪⭑📡 ⋗ *runtime*
 ┃ ৎ٠࣪⭑👤 ⋗ *creador*
 ┃ ৎ٠࣪⭑🔄 ⋗ *update*
-┃ ৎ٠࣪⭑🔄 ⋗ *reiniciar* / *estado*
-┃ ৎ٠࣪⭑🔑 ⋗ *join*
-┃ ৎ٠࣪⭑👑 ⋗ *dameadmin* / *tenerpoder*
+┃ ৎ٠࣪⭑🔄 ⋗ *reiniciar*
 ┃ ৎ٠࣪⭑⛔ ⋗ *banchat*
 ┃ ৎ٠࣪⭑⛔ ⋗ *unbanchat*
 ┃ ৎ٠࣪⭑🤖 ⋗ *setfotobot*
-┃ ৎ٠࣪⭑🏷️ ⋗ *setbotname* / *setnamebot*
+┃ ৎ٠࣪⭑🏷️ ⋗ *setbotname*
 ┃ ৎ٠࣪⭑📡 ⋗ *on antiprivado*
 ┃ ৎ٠࣪⭑📡 ⋗ *autoadmin*
 ┃ ৎ٠࣪⭑💡 ⋗ *lista grupos*
 ┃ ৎ٠࣪⭑🌐 ⋗ *salir*
 ┗━━━━━━━━━━━━━━━━━━┛
 
-> © 𝑴𝑬𝑳𝑰𝑶𝑫𝑨𝑺 𝑩𝑶𝑻 𝖝 𝖩𝗎𝖺enan-𝗓`
+> © 𝑴𝑬𝑳𝑰𝑶𝑫𝑨𝑺 𝑩𝑶𝑻 𝖝 𝖩𝗎𝖺𝗇-𝖶𝗓`
 
   await conn.sendMessage(
     m.chat,
