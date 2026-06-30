@@ -43,12 +43,18 @@ let handler = async (m, { conn, isAdmin, isBotAdmin }) => {
     console.error("Error al crear el Fake Chat:", err)
   }
 
+  // --- DISEÑO: SI FALTA EL USUARIO OBJETIVO ---
   if (!target) {
+    const textFalta = `⚡ *『 ACCIÓN REQUERIDA 』* ⚡\n\n` +
+                      `❌ *Error:* No se detectó a ningún usuario.\n\n` +
+                      `> 🛡️ Por favor, *responde a un mensaje* o *menciona a un @user* que desees remover del cargo de Administrador.`
+
     return conn.sendMessage(
       m.chat,
       {
-        text: '> *Menciona o responde al admin que deseas quitar* 👑🤪',
+        text: textFalta,
         contextInfo: {
+          mentionedJid: [m.sender], // Te menciona a ti indicando el error
           forwardingScore: 1,
           isForwarded: true,
           forwardedNewsletterMessageInfo: {
@@ -61,24 +67,34 @@ let handler = async (m, { conn, isAdmin, isBotAdmin }) => {
     )
   }
 
+  // Ejecutar la degradación
   await conn.groupParticipantsUpdate(
     m.chat,
     [target],
     'demote'
   )
 
+  // Reacción de éxito
   await conn.sendMessage(m.chat, {
     react: {
-      text: '✅',
+      text: '⚡',
       key: m.key
     }
   })
 
+  // --- DISEÑO: MENSAJE DE ÉXITO ---
+  const textExito = `👑 *『 CONTROL DE ADMINISTRADORES 』* 👑\n\n` +
+                    `⚠️ *Aviso:* Un administrador ha sido removido.\n` +
+                    `👤 *Usuario:* @${target.split('@')[0]}\n` +
+                    `📉 *Acción:* Degradado a miembro común.\n\n` +
+                    `> ⚖️ _Acción ejecutada por el sistema de moderación._`
+
   await conn.sendMessage(
     m.chat,
     {
-      text: '> *Acaba de ser quitado del grupo de admins* 😈',
+      text: textExito,
       contextInfo: {
+        mentionedJid: [target], // Mención al usuario degradado
         forwardingScore: 1,
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
