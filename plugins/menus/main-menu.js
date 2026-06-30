@@ -47,7 +47,7 @@ let handler = async (m, { conn, uptime }) => {
 ➥ ⋄ 𝐔𝐬𝐮𝐚𝐫𝐢𝐨 : @${m.sender.split('@')[0]}
 ➥ ⋄ 𝐂𝐫𝐞𝐚𝐝𝐨𝐫 : +573223702049
 ➥ ⋄ 𝐔𝐩𝐭𝐢𝐦𝐞 : ${uptime}
-➥ ⋄ 𝐅𝐞𝐜𝐡𝐚 : ${horarioFecha}
+➥ ⋄ 𝐅𝐞𝐜𝐡𝐚 : \`\`\`${horarioFecha}\`\`\`
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
