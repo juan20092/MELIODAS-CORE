@@ -77,7 +77,7 @@ let handler = async (m, { conn, isAdmin, isBotAdmin }) => {
   await conn.sendMessage(
     m.chat,
     {
-      text: '> *usuario ya no es del equipo de admins por gay* 😂',
+      text: '> *Removido de sus funciones administrativas por motivos de homosexualidad* 🤣',
       contextInfo: {
         forwardingScore: 1,
         isForwarded: true,
