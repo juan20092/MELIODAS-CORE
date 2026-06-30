@@ -1,10 +1,19 @@
 import axios from 'axios'
 
-let handler = async (m, { conn, uptime }) => {
+let handler = async (m, { conn }) => {
 
   const horarioFecha = new Date().toLocaleString('es-CO', {
     timeZone: 'America/Bogota'
   })
+  
+  function clockString(ms) {
+  let h = isNaN(ms) ? '--' : Math.floor(ms / 3600000)
+  let m = isNaN(ms) ? '--' : Math.floor(ms / 60000) % 60
+  let s = isNaN(ms) ? '--' : Math.floor(ms / 1000) % 60
+  return [h, m, s].map(v => v.toString().padStart(2, '0')).join(':')
+}
+
+const uptime = clockString(process.uptime() * 1000)
 
   const labelTest = "𝐌𝐄𝐋𝐈𝐎𝐃𝐀𝐒 - 𝐁𝐎𝐓"
   const imgUrl = "https://cdn.dix.lat/me/b0216efd-5f4a-4f5a-97bf-b62a81d10014.jpg"
