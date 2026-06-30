@@ -3,6 +3,7 @@ import axios from 'axios'
 let handler = async (m, { conn, isAdmin, isBotAdmin }) => {
   if (!isAdmin) return global.dfail("admin", m, conn)
   if (!isBotAdmin) return global.dfail("botAdmin", m, conn)
+  
   const target =
     m.mentionedJid?.[0] ||
     m.quoted?.sender ||
@@ -46,7 +47,7 @@ let handler = async (m, { conn, isAdmin, isBotAdmin }) => {
     return conn.sendMessage(
       m.chat,
       {
-        text: '> *Menciona o responde al recluta que vas a hacer admin 😈🔥*',
+        text: '> *Menciona o responde al admin que deseas Promover al equipo de admins* 😈🔥',
         contextInfo: {
           forwardingScore: 1,
           isForwarded: true,
@@ -60,12 +61,14 @@ let handler = async (m, { conn, isAdmin, isBotAdmin }) => {
     )
   }
 
+  // Promueve al usuario en el grupo
   await conn.groupParticipantsUpdate(
     m.chat,
     [target],
     'promote'
   )
 
+  // Reacción de éxito
   await conn.sendMessage(m.chat, {
     react: {
       text: '✅',
@@ -76,8 +79,9 @@ let handler = async (m, { conn, isAdmin, isBotAdmin }) => {
   await conn.sendMessage(
     m.chat,
     {
-      text: '> *el recluta salio fuerte ya es del equipo de admins 😈👑*',
+      text: `> *@${target.split('@')[0]} ¡Ahora es parte del equipo de admins!* 👑😈🔥`,
       contextInfo: {
+        mentionedJid: [target], 
         forwardingScore: 1,
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
@@ -98,3 +102,4 @@ handler.admin = true
 handler.botAdmin = true
 
 export default handler
+
