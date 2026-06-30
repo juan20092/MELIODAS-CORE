@@ -346,7 +346,7 @@ const imgUrl = "https://cdn.dix.lat/me/b0216efd-5f4a-4f5a-97bf-b62a81d10014.jpg"
 global.dfail = async (type, m, conn, command = "", usedPrefix = ".", user2 = "usuario") => {
   const msg = {
     rowner: "> ╰➤ |𝐀𝐯𝐢𝐬𝐨| `𝐋𝐨 𝐬𝐢𝐞𝐧𝐭𝐨 𝐞𝐬𝐭𝐞 𝐜𝐨𝐦𝐚𝐧𝐝𝐨 𝐬𝐨𝐥𝐨 𝐞𝐬 𝐩𝐚𝐫𝐚 𝐦𝐢 𝐜𝐫𝐞𝐚𝐝𝐨𝐫`🚫",
-    owner: "> ╰➤ _ |𝐀𝐯𝐢𝐬𝐨| *` 𝙋𝙚𝙧𝙙𝙤𝙣 𝙨𝙤𝙡𝙤 𝙢𝙞𝙨 𝙘𝙧𝙚𝙖𝙙𝙤𝙧𝙚𝙨 𝙥𝙪𝙚𝙙𝙚𝙣 𝙪𝙨𝙖𝙧𝙡𝙤 😴.`*_",
+    owner: "> ╰➤ _ |𝐀𝐯𝐢𝐬𝐨| *` 𝙋𝙚𝙧𝙙𝙤𝙣 𝙨𝙤𝙡𝙤 𝙢𝙞𝙨 𝙘𝙧𝙚𝙖𝙙𝙤𝙧𝙚𝙨 𝙥𝙪𝙚𝙙𝙚𝙣 𝙪𝙨𝙖𝙧𝙡ο 😴.`*_",
     mods: "> ╰➤ _*|𝐀𝐯𝐢𝐬𝐨| `𝐄𝐡 𝐥𝐨 𝐬𝐢𝐞𝐧𝐭𝐨 𝐞𝐬𝐭𝐨 𝐬𝐨𝐥𝐨 𝐞𝐬 𝐩𝐚𝐫𝐚 𝐥𝐨𝐬 𝐦𝐨𝐝𝐬 ⚡`*_",
     premium: "> ╰➤ |𝐀𝐯𝐢𝐬𝐨| *`🔑 𝐍𝐎 𝐄𝐑𝐄𝐒 𝐔𝐒𝐔𝐀𝐑𝐈𝐎 𝐏𝐑𝐄𝐌𝐈𝐔𝐌 𝐇𝐀𝐁𝐋𝐀 𝐂𝐎𝐍 𝐌𝐈 𝐂𝐑𝐄𝐀𝐃𝐎𝐑`*_",
     group: "> ╰➤ |𝐀𝐯𝐢𝐬𝐨|  _*`↘️ 𝐄𝐒𝐓𝐄 𝐂𝐎𝐌𝐀𝐍𝐃𝐎́ 𝐒𝐎𝐋𝐎 𝐅𝐔𝐍𝐂𝐈𝐎𝐍𝐀 𝐄𝐍 𝐆𝐑𝐔𝐏𝐎𝐒`*_",
@@ -408,36 +408,38 @@ global.dfail = async (type, m, conn, command = "", usedPrefix = ".", user2 = "us
 export async function handler(chatUpdate) {
   try {
     let m = chatUpdate.messages?.[0]
-    if (!m?.message || m.key?.fromMe || m.isBaileys) return
+    if (!m?.message) return
 
     const conn = global.conn
     m = smsg(conn, m)
+    
+    // --- Lógica añadida según requerimiento ---
+    const _user = global.db && global.db.data && global.db.data.users && global.db.data.users[m.sender] || {}
+    const sendNum = (m?.sender || '').replace(/[^0-9]/g, '')
+    const isROwner = [conn.decodeJid(global.conn?.user?.id), ...global.owner?.map(([number]) => number)].map(v => (v || '').replace(/[^0-9]/g, '')).includes(sendNum)
+    
+    const isOwner = isROwner || m.fromMe
+    const isMods = isOwner || global.mods.map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').includes(m.sender)
+    const isPrems = isROwner || global.prems.map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').includes(m.sender) || _user.prem == true
+
+    if (global.opts && global.opts['queque'] && m.text && !(isMods || isPrems)) {
+      let queque = this.msgqueque || [], time = 1000 * 5
+      const previousID = queque[queque.length - 1]
+      queque.push(m.id || m.key.id)
+      setInterval(async function () {
+        if (queque.indexOf(previousID) === -1) clearInterval(this)
+        const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+        await delay(time)
+      }, time)
+    }
+
+    if (m.isBaileys) return
+    if (m.key?.fromMe) return
     if (!m.text) return
 
-    const _user = global.db?.data?.users?.[m.sender] || {}
-    const sendNum = String(m?.sender || '').replace(/[^0-9]/g, '')
-    const normalizeNumber = (jid) => String(jid || '').replace(/[^0-9]/g, '')
-    const cleanJid = (jid) => String(jid || '').split(':')[0] || ''
-    const normalizeOwnerList = (value) => {
-      if (!Array.isArray(value)) return []
-      return value
-        .map((entry) => {
-          if (Array.isArray(entry)) return normalizeNumber(entry[0])
-          if (typeof entry === 'string' || typeof entry === 'number') return normalizeNumber(entry)
-          return ''
-        })
-        .filter(Boolean)
-    }
-    const botJid = normalizeNumber(cleanJid(conn.decodeJid?.(conn.user?.id) || conn.user?.id))
-    const ownerNumbers = normalizeOwnerList(global.owner)
-    const modNumbers = normalizeOwnerList(global.mods)
-    const premNumbers = normalizeOwnerList(global.prems)
-    const isROwner = [botJid, ...ownerNumbers].includes(sendNum)
-    const isOwner = isROwner || m.fromMe
-    const isMods = isOwner || modNumbers.includes(sendNum)
-    const isPrems = isROwner || premNumbers.includes(sendNum) || _user?.prem === true
-
     m.exp = (m.exp || 0) + Math.ceil(Math.random() * 10)
+    // ------------------------------------------
+
     const prefix = /^[./#!]/
 
     let usedPrefix = ""
@@ -481,6 +483,8 @@ export async function handler(chatUpdate) {
       }
     }
 
+    const normalizeNumber = (jid) => String(jid || '').replace(/[^0-9]/g, '')
+    const cleanJid = (jid) => String(jid || '').split(':')[0] || ''
     const senderNum = normalizeNumber(m.sender)
     const botNums = [conn.user?.jid, conn.user?.lid].map((jid) => normalizeNumber(cleanJid(jid))).filter(Boolean)
     const user = m.isGroup ? participants.find((u) => normalizeNumber(u.id) === senderNum) || {} : {}
