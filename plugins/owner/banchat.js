@@ -59,7 +59,7 @@ const handler = async (m, { conn }) => {
     await conn.sendMessage(
       m.chat,
       {
-        text: '❇️ 𝙴𝙻 𝙱𝙾𝚃 𝚀𝚄𝙴𝙳𝙾 𝙳𝙴𝚂𝙰𝙲𝚃𝙸𝚅𝙰𝙳𝙾 𝙴𝙽 𝙴𝚂𝚃𝙴 𝙶𝚁𝚄𝙿𝙾. 𝚄𝚂𝙰 𝚄𝙽𝙱𝙰𝙽𝙲𝙷𝙰𝚃 𝙿𝙰𝚁𝙰 𝚁𝙴𝙰𝙲𝚃𝙸𝚅𝙰𝚁𝙻𝙾',
+        text: '😈 𝙴𝙻 𝙱𝙾𝚃 𝚀𝚄𝙴𝙳𝙾 𝙳𝙴𝚂𝙰𝙲𝚃𝙸𝚅𝙰𝙳𝙾 𝙴𝙽 𝙴𝚂𝚃𝙴 𝙶𝚁𝚄𝙿𝙾',
         contextInfo: {
           forwardingScore: 1,
           isForwarded: true,
