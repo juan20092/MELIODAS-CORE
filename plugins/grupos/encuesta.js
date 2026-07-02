@@ -4,7 +4,6 @@ let handler = async (m, { conn, args, text, command, isAdmin, isBotAdmin }) => {
     `*.𝚎𝚗𝚌𝚞𝚎𝚜𝚝𝚊 𝙿𝚛𝚎𝚐𝚞𝚗𝚝𝚊 | 𝚘𝚙𝚌𝚒𝚘́𝚗𝟷 | 𝚘𝚙𝚌𝚒𝚘́𝚗𝟸 | 𝚘𝚙𝚌𝚒𝚘́𝚗𝟹*`
   )
 
-  // Separar pregunta y opciones
   let parts = text.split('|').map(v => v.trim()).filter(v => v)
 
   if (parts.length < 3)
