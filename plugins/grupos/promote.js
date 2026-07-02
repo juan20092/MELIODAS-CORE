@@ -47,7 +47,7 @@ let handler = async (m, { conn, isAdmin, isBotAdmin }) => {
     return conn.sendMessage(
       m.chat,
       {
-        text: '> *Menciona o responde al admin que deseas Promover al equipo de admins* 😈🔥',
+        text: '> *𝙼𝚎𝚗𝚌𝚒𝚘𝚗𝚊 𝚘 𝚛𝚎𝚜𝚙𝚘𝚗𝚍𝚎 𝚊𝚕 𝚞𝚜𝚎𝚛 𝚚𝚞𝚎 𝚍𝚎𝚜𝚎𝚊𝚜 𝙿𝚛𝚘𝚖𝚘𝚟𝚎𝚛 𝚊 𝚊𝚍𝚖𝚒𝚗 𝚍𝚎𝚕 𝚐𝚛𝚞𝚙𝚘* 😈🔥',
         contextInfo: {
           forwardingScore: 1,
           isForwarded: true,
@@ -77,7 +77,7 @@ let handler = async (m, { conn, isAdmin, isBotAdmin }) => {
   await conn.sendMessage(
     m.chat,
     {
-      text: `> *@${target.split('@')[0]} ¡Ahora es parte del equipo de admins!* 😈🔥`,
+      text: `> *@${target.split('@')[0]} 𝙰𝚑𝚘𝚛𝚊 𝚎𝚜 𝚊𝚍𝚖𝚒𝚗 𝚍𝚎𝚕 𝚐𝚛𝚞𝚙𝚘* 😈🔥`,
       contextInfo: {
         mentionedJid: [target], 
         forwardingScore: 1,
