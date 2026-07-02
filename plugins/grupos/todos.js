@@ -10,10 +10,7 @@ let handler = async (m, { isOwner, isAdmin, conn, participants, args }) => {
 
   let pesan = args.join(' ')
 
-  let teks = `
-╭──────────⬣
-   🗣️ 𝗜𝗡𝗩𝗢𝗖𝗔𝗖𝗜𝗢𝗡 𝗚𝗘𝗡𝗘𝗥𝗔𝗟!
-╰──────────⬣
+  let teks = let teks = `*!  MENCION GENERAL  !*\n\n╭  ┄ 𝅄 ۪꒰ \`⡞᪲=͟͟͞${global.botName || '𝘔𝘌𝘓𝘐𝘖𝘋𝘈𝘚－𝘉𝘖𝘛'}≼᳞ׄ\` ꒱ ۟ 𝅄 ┄\n`
 
 ⎔ 𝗚𝗿𝘂𝗽𝗼      : ${await conn.getName(m.chat)}
 ⎔ 𝗔𝗱𝗺𝗶𝗻      : @${m.sender.split('@')[0]}
@@ -27,10 +24,10 @@ let handler = async (m, { isOwner, isAdmin, conn, participants, args }) => {
 `
 
   for (const user of participants) {
-    teks += `◈ @${user.id.split('@')[0]}\n`
+    teks += `┊◈ @${user.id.split('@')[0]}\n`
   }
 
-  teks += `
+  teks += `╰⸼ ┄ ┄ ┄ ─  ꒰  ׅ୭ ୧ ׅ ꒱  ┄  ─ ┄⸼
 > 🔰 𝘔𝘌𝘓𝘐𝘖𝘋𝘈𝘚 𝘉𝘖𝘛
 `
 
