@@ -11,24 +11,18 @@ let handler = async (m, { isOwner, isAdmin, conn, participants, args }) => {
   let pesan = args.join(' ')
 
   let teks = `
-╭━━━━━━━━━━━━━━━━━━━━━━⬣
-│          ⚡ 𝗜𝗡𝗩𝗢𝗖𝗔𝗖𝗜𝗢𝗡 ⚡
-╰━━━━━━━━━━━━━━━━━━━━━━⬣
+╭──────────⬣
+│  🗣️ 𝗜𝗡𝗩𝗢𝗖𝗔𝗖𝗜𝗢𝗡 𝗚𝗘𝗡𝗘𝗥𝗔𝗟!
+╰──────────⬣
 
 ⎔ 𝗚𝗿𝘂𝗽𝗼      : ${await conn.getName(m.chat)}
 ⎔ 𝗔𝗱𝗺𝗶𝗻      : @${m.sender.split('@')[0]}
 ⎔ 𝗠𝗶𝗲𝗺𝗯𝗿𝗼𝘀  : ${participants.length}
 ⎔ 𝗛𝗼𝗿𝗮       : ${new Date().toLocaleTimeString('es-CO', { timeZone: 'America/Bogota' })}
 
-╭───────────────⬣
-│ 💬 𝗠𝗘𝗡𝗦𝗔𝗝𝗘
-╰───────────────⬣
-
-${pesan || 'Sin mensaje.'}
-
-╭───────────────⬣
+╭──────────⬣
 │ 📢 𝗠𝗜𝗘𝗠𝗕𝗥𝗢𝗦
-╰───────────────⬣
+╰──────────⬣
 
 `
 
@@ -37,8 +31,8 @@ ${pesan || 'Sin mensaje.'}
   }
 
   teks += `
-╰━━━━━━━━━━━━━━━━━━━━━━⬣
-> ⚡ 𝗠𝗘𝗟𝗜𝗢𝗗𝗔𝗦 𝗕𝗢𝗧 • 𝗚𝗥𝗢𝗨𝗣 𝗦𝗬𝗦𝗧𝗘𝗠
+╰━━━━━━━━━━━━⬣
+> 🔰 𝘔𝘌𝘓𝘐𝘖𝘋𝘈𝘚 𝘉𝘖𝘛
 `
 
   const labelTest = "𝐌𝐄𝐋𝐈𝐎𝐃𝐀𝐒 - 𝐁𝐎𝐓"
