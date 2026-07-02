@@ -1,4 +1,4 @@
-import { muteUser, isMuted } from '../wzr/mute.js'
+import { muteUser, isMuted } from '../../wzr/mute.js'
 
 let handler = async (m) => {
   let user = m.mentionedJid[0] || m.quoted?.sender
