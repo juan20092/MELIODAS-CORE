@@ -33,7 +33,7 @@ let handler = async (m, { conn, text, participants }) => {
 👥 *𝗚𝗥𝗨𝗣𝗢:* ${await conn.getName(m.chat)}
 👤 *𝗠𝗜𝗘𝗠𝗕𝗥𝗢𝗦:* ${participants.length}
 
-[ 👻 𝙻𝙸𝚂𝚃𝙰 𝙳𝙴 𝙵𝙰𝙽𝚃𝙰𝚂𝙼𝙰𝚂 👻 ]
+[ 👻 𝙻𝙸𝚂𝚃𝙰 𝙳𝙴 𝙵𝙰𝙽𝚃𝙰𝚂𝙼𝙰𝚂 ]
 
 ${sider.map(v => `👻 @${v.split('@')[0]}`).join('\n')}
 
