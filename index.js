@@ -35,6 +35,11 @@ import { makeWASocket, smsg } from './wzr/simple.js'
 import store from './wzr/store.js'
 import { logMessages } from './wzr/logger.js'
 
+if (fs.existsSync('./database.json')) {
+
+  global.db.data = JSON.parse(fs.readFileSync('./database.json'))
+
+} else {
 global.db = {
   data: {
     users: {},
@@ -42,6 +47,14 @@ global.db = {
     groups: {}
   }
 }
+setInterval(() => {
+  if (global.db?.data) {
+    fs.writeFileSync(
+      './database.json',
+      JSON.stringify(global.db.data, null, 2)
+    )
+  }
+}, 30000)
 
 const muteConsolePatterns = [/^\s*Closing session:/i, /SessionEntry\s*\{/i]
 const shouldMuteConsole = (...args) => {
