@@ -25,6 +25,7 @@ let handler = async (m, { isOwner, isAdmin, conn, participants, args }) => {
   }
 
   teks += `╰⸼ ┄ ─  ꒰  ׅ୭ ୧ ׅ ꒱  ┄  ─ ┄⸼
+
 > 🔰 𝘔𝘌𝘓𝘐𝘖𝘋𝘈𝘚 𝘉𝘖𝘛
 `
 
