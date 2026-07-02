@@ -401,11 +401,32 @@ async function connectionUpdate(update) {
   }
 }
 
-if (global.db) {
-  setInterval(async () => {
-    if (global.db?.data) await global.db.write().catch(console.error)
-  }, 30_000)
+// Inicializar la base de datos en memoria si no viene definida de otros archivos
+if (!global.db) global.db = { data: {} }
+if (!global.db.data) global.db.data = {}
+if (!global.db.data.users) global.db.data.users = {}
+
+// Cargar datos existentes si el archivo database.json ya fue creado antes
+const databasePath = './database.json'
+if (fs.existsSync(databasePath)) {
+  try {
+    global.db.data = JSON.parse(fs.readFileSync(databasePath, 'utf-8'))
+  } catch (e) {
+    console.error(chalk.red('❌ Error al leer database.json, se creará uno nuevo:'), e)
+  }
 }
+
+// Guardado automático físico cada 30 segundos
+setInterval(async () => {
+  try {
+    if (global.db && global.db.data) {
+      fs.writeFileSync(databasePath, JSON.stringify(global.db.data, null, 2), 'utf-8')
+    }
+  } catch (error) {
+    console.error(chalk.red('❌ Error al escribir en database.json:'), error)
+  }
+}, 30_000)
+
 
 async function _quickTest() {
   const bins = ['ffmpeg', 'ffprobe', 'convert', 'magick', 'gm']
