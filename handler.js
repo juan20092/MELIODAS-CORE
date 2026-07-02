@@ -174,6 +174,7 @@ import path from "path"
 import { fileURLToPath, pathToFileURL } from "url"
 import axios from "axios"
 import { isChatBanned } from "./wzr/banlist.js"
+import { isMuted } from './wzr/mute.js'
 
 global.plugins ||= {}
 global.groupMetaCache ||= new Map()
@@ -413,11 +414,9 @@ export async function handler(chatUpdate) {
     const conn = global.conn
     m = smsg(conn, m)
     
-    // --- Lógica de Base de datos y Permisos adaptada para arrays de arrays ---
     const _user = global.db?.data?.users?.[m.sender] || {}
     const sendNum = (m?.sender || '').replace(/[^0-9]/g, '')
     
-    // Mapea correctamente si global.owner contiene sub-arrays como ["número", "tag"]
     const ownersList = Array.isArray(global.owner) 
       ? global.owner.map(v => (Array.isArray(v) ? v[0] : v)) 
       : []
@@ -452,7 +451,6 @@ export async function handler(chatUpdate) {
     if (!m.text) return
 
     m.exp = (m.exp || 0) + Math.ceil(Math.random() * 10)
-    // ------------------------------------------------
 
     const prefix = /^[./#!]/
 
@@ -483,6 +481,22 @@ export async function handler(chatUpdate) {
         }
       }
     }
+    
+    if (m.isGroup && isMuted(m.sender)) {
+
+  try {
+
+    await conn.sendMessage(m.chat, {
+
+      delete: m.key
+
+    })
+
+  } catch {}
+
+  return
+
+}
 
     let groupMetadata = {}
     let participants = []
