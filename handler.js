@@ -448,7 +448,17 @@ export async function handler(chatUpdate) {
 
     if (m.isBaileys) return
     if (m.key?.fromMe) return
-    if (!m.text) return
+    if (m.isGroup && isMuted(m.sender)) {
+  try {
+    await conn.sendMessage(m.chat, {
+      delete: m.key
+    })
+  } catch {}
+
+  return
+}
+
+if (!m.text) return
 
     m.exp = (m.exp || 0) + Math.ceil(Math.random() * 10)
 
