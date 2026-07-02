@@ -86,7 +86,6 @@ const uptime = clockString(process.uptime() * 1000)
 ┃ ৎ٠࣪⭑📈 ⋗ *promote*
 ┃ ৎ٠࣪⭑📉 ⋗ *demote*
 ┃ ৎ٠࣪⭑📢 ⋗ *todos*
-┃ ৎ٠࣪⭑📢 ⋗ *hidetag*
 ┃ ৎ٠࣪⭑📝 ⋗ *n* <texto>
 ┃ ৎ٠࣪⭑📊 ⋗ *encuesta*
 ┃ ৎ٠࣪⭑🔓 ⋗ *grupo abrir*
